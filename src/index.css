@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+    background: #0a0a0a;
+    color: white;
+    min-height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .card-base {
+    @apply rounded-xl border-2 shadow-card transition-all duration-200 select-none;
+    aspect-ratio: 2.5 / 3.5;
+  }
+
+  .card-hover {
+    @apply hover:shadow-card-hover hover:-translate-y-2 hover:scale-105 cursor-pointer;
+  }
+
+  .card-playable {
+    @apply ring-2 ring-yellow-400 ring-opacity-75 animate-pulse-slow;
+  }
+
+  .felt-bg {
+    background: radial-gradient(ellipse at center, #1a6b2a 0%, #145522 50%, #0d3d18 100%);
+  }
+
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  .glass-dark {
+    @apply bg-black/30 backdrop-blur-md border border-white/10;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-bold rounded-xl
+           hover:from-yellow-400 hover:to-amber-400 active:scale-95 transition-all duration-150
+           shadow-lg hover:shadow-xl;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-white/10 text-white font-bold rounded-xl border border-white/20
+           hover:bg-white/20 active:scale-95 transition-all duration-150;
+  }
+
+  .btn-danger {
+    @apply px-6 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-bold rounded-xl
+           hover:from-red-500 hover:to-red-400 active:scale-95 transition-all duration-150
+           shadow-lg hover:shadow-xl;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+
+  .monopoly-title {
+    font-family: 'Fredoka One', 'Georgia', serif;
+    letter-spacing: 2px;
+  }
+
+  .property-slot {
+    @apply rounded-lg border-2 border-dashed border-white/20 p-1 min-h-[60px] transition-colors duration-200;
+  }
+
+  .property-slot-active {
+    @apply border-yellow-400/50 bg-yellow-400/5;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+  }
+}
+
+/* Card color gradients */
+.card-money {
+  background: linear-gradient(135deg, #f5f5dc 0%, #fff8dc 50%, #f5f5dc 100%);
+  border-color: #c4a747;
+}
+
+.card-action {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #e3f2fd 100%);
+  border-color: #1565c0;
+}
+
+.card-rent {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 50%, #fff3e0 100%);
+  border-color: #e65100;
+}
+
+.card-property-red { background: linear-gradient(135deg, #ffcdd2 0%, #ef5350 50%, #ffcdd2 100%); border-color: #c62828; }
+.card-property-blue { background: linear-gradient(135deg, #bbdefb 0%, #1e88e5 50%, #bbdefb 100%); border-color: #0d47a1; }
+.card-property-green { background: linear-gradient(135deg, #c8e6c9 0%, #43a047 50%, #c8e6c9 100%); border-color: #1b5e20; }
+.card-property-yellow { background: linear-gradient(135deg, #fff9c4 0%, #fdd835 50%, #fff9c4 100%); border-color: #f9a825; }
+.card-property-orange { background: linear-gradient(135deg, #ffe0b2 0%, #fb8c00 50%, #ffe0b2 100%); border-color: #e65100; }
+.card-property-purple { background: linear-gradient(135deg, #e1bee7 0%, #8e24aa 50%, #e1bee7 100%); border-color: #4a148c; }
+.card-property-brown { background: linear-gradient(135deg, #d7ccc8 0%, #6d4c41 50%, #d7ccc8 100%); border-color: #3e2723; }
+.card-property-teal { background: linear-gradient(135deg, #b2dfdb 0%, #00897b 50%, #b2dfdb 100%); border-color: #004d40; }
+.card-property-pink { background: linear-gradient(135deg, #f8bbd0 0%, #d81b60 50%, #f8bbd0 100%); border-color: #880e4f; }
+.card-property-sky { background: linear-gradient(135deg, #b3e5fc 0%, #039be5 50%, #b3e5fc 100%); border-color: #01579b; }
+.card-property-railroad { background: linear-gradient(135deg, #212121 0%, #424242 50%, #212121 100%); border-color: #000; }
+.card-property-utility { background: linear-gradient(135deg, #e8f5e9 0%, #66bb6a 50%, #e8f5e9 100%); border-color: #2e7d32; }
+.card-property-wild { background: linear-gradient(135deg, #ff6b6b 0%, #feca57 25%, #48dbfb 50%, #ff9ff3 75%, #54a0ff 100%); border-color: #f39c12; }
