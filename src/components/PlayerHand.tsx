@@ -3,7 +3,9 @@ import { useGameStore } from '../store/gameStore'
 import Card from './Card'
 import { Card as CardType, PropertyColor } from '../types/game'
 import { canPlayCard, getAvailableColors } from '../utils/helpers'
+import { getColorHex } from './Card'
 import { useState } from 'react'
+import { Landmark, MapPin, Play } from 'lucide-react'
 
 interface PlayerHandProps {
   onCardAction: (card: CardType, action: 'bank' | 'property' | 'play', color?: PropertyColor) => void
@@ -75,40 +77,37 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
       <AnimatePresence>
         {selectedCard && isActionPhase && (
           <motion.div
-            className="absolute -top-16 left-1/2 -translate-x-1/2 flex gap-2 z-50"
-            initial={{ opacity: 0, y: 10 }}
+            className="absolute -top-14 left-1/2 -translate-x-1/2 flex gap-1.5 z-50"
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
+            exit={{ opacity: 0, y: 8 }}
           >
-            <motion.button
-              className="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs font-bold rounded-lg shadow-lg whitespace-nowrap"
+            <button
+              className="px-3 py-1.5 bg-[#3a5a3a] hover:bg-[#4a6a4a] text-[#c0d8c0] text-[11px] font-medium rounded-md flex items-center gap-1.5 transition-colors"
               onClick={() => handleAction('bank')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
-              💰 Bank (${selectedCard.value}M)
-            </motion.button>
+              <Landmark size={11} />
+              Bank (${selectedCard.value}M)
+            </button>
 
             {canPlayAsProperty(selectedCard) && (
-              <motion.button
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg shadow-lg whitespace-nowrap"
+              <button
+                className="px-3 py-1.5 bg-[#3a4a5a] hover:bg-[#4a5a6a] text-[#b0c8d8] text-[11px] font-medium rounded-md flex items-center gap-1.5 transition-colors"
                 onClick={() => handleAction('property')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
-                🏠 Property
-              </motion.button>
+                <MapPin size={11} />
+                Property
+              </button>
             )}
 
             {canPlayAsAction(selectedCard) && canPlayCard(selectedCard, player, actionsPlayedThisTurn) && (
-              <motion.button
-                className="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-lg shadow-lg whitespace-nowrap"
+              <button
+                className="px-3 py-1.5 bg-[#5a4a3a] hover:bg-[#6a5a4a] text-[#d8c8b0] text-[11px] font-medium rounded-md flex items-center gap-1.5 transition-colors"
                 onClick={() => handleAction('play')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
-                ⚡ Play
-              </motion.button>
+                <Play size={11} />
+                Play
+              </button>
             )}
           </motion.div>
         )}
@@ -118,25 +117,23 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
       <AnimatePresence>
         {showColorPicker && (
           <motion.div
-            className="absolute -top-28 left-1/2 -translate-x-1/2 glass-dark rounded-xl p-3 z-50"
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            className="absolute -top-24 left-1/2 -translate-x-1/2 panel-raised rounded-lg p-3 z-50"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
           >
-            <p className="text-[10px] text-gray-300 mb-2 text-center">Choose color:</p>
+            <p className="text-[10px] text-text-muted mb-2 text-center">Choose color:</p>
             <div className="flex gap-1.5 flex-wrap justify-center max-w-[200px]">
               {getAvailableColors(showColorPicker).map(color => (
-                <motion.button
+                <button
                   key={color}
-                  className="w-8 h-8 rounded-lg border-2 border-white/30 hover:border-yellow-400 transition-colors flex items-center justify-center text-[8px] font-bold text-white"
-                  style={{ backgroundColor: getColorHexForButton(color) }}
+                  className="w-7 h-7 rounded-md border border-white/10 hover:border-gold/50 transition-colors flex items-center justify-center text-[7px] font-medium text-white/80"
+                  style={{ backgroundColor: getColorHex(color) }}
                   onClick={() => handleColorSelect(color)}
-                  whileHover={{ scale: 1.15 }}
-                  whileTap={{ scale: 0.9 }}
                   title={color}
                 >
                   {color.slice(0, 2).toUpperCase()}
-                </motion.button>
+                </button>
               ))}
             </div>
           </motion.div>
@@ -155,15 +152,15 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
             return (
               <motion.div
                 key={card.id}
-                initial={{ opacity: 0, y: 100, rotate: 0 }}
+                initial={{ opacity: 0, y: 80 }}
                 animate={{
                   opacity: 1,
-                  y: selectedCard?.id === card.id ? -12 : 0,
+                  y: selectedCard?.id === card.id ? -8 : 0,
                   rotate: rotation,
                   x,
                 }}
-                exit={{ opacity: 0, y: 100, scale: 0.5 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                exit={{ opacity: 0, y: 80 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 style={{ zIndex: selectedCard?.id === card.id ? 50 : i, marginLeft: i > 0 ? '-16px' : '0' }}
               >
                 <Card
@@ -180,13 +177,4 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
       </div>
     </div>
   )
-}
-
-function getColorHexForButton(color: PropertyColor): string {
-  const map: Record<PropertyColor, string> = {
-    red: '#E53935', blue: '#1E88E5', green: '#43A047', yellow: '#d4ac0d',
-    orange: '#FB8C00', purple: '#8E24AA', brown: '#6D4C41', teal: '#00897B',
-    pink: '#D81B60', sky: '#039BE5', railroad: '#424242', utility: '#66BB6A',
-  }
-  return map[color] || '#999'
 }

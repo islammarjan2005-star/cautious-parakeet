@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { Card as CardType } from '../types/game'
 import { getTotalValue } from '../utils/helpers'
-import { Banknote } from 'lucide-react'
+import { Landmark } from 'lucide-react'
 
 interface BankAreaProps {
   cards: CardType[]
@@ -16,8 +16,8 @@ export default function BankArea({ cards, compact, selectable, selectedIds = [],
 
   if (cards.length === 0) {
     return (
-      <div className={`flex items-center justify-center ${compact ? 'h-8' : 'h-12'} text-white/20 text-xs italic`}>
-        <Banknote size={14} className="mr-1 opacity-40" />
+      <div className={`flex items-center justify-center ${compact ? 'h-8' : 'h-12'} text-text-muted/30 text-[11px]`}>
+        <Landmark size={11} className="mr-1 opacity-40" />
         Empty bank
       </div>
     )
@@ -34,8 +34,8 @@ export default function BankArea({ cards, compact, selectable, selectedIds = [],
   return (
     <div>
       <div className="flex items-center gap-1 mb-1">
-        <Banknote size={12} className="text-yellow-400" />
-        <span className="text-[10px] font-bold text-yellow-400">${total}M</span>
+        <Landmark size={10} className="text-gold" />
+        <span className="text-[10px] font-medium text-gold">${total}M</span>
       </div>
       <div className="flex gap-1 flex-wrap">
         {Object.entries(grouped)
@@ -48,16 +48,14 @@ export default function BankArea({ cards, compact, selectable, selectedIds = [],
                   <motion.div
                     key={card.id}
                     className={`
-                      rounded-md px-1.5 py-0.5 text-[9px] font-bold border
+                      rounded px-1.5 py-0.5 text-[9px] font-medium border
                       ${isSelected
-                        ? 'bg-yellow-400 text-black border-yellow-300 shadow-md'
-                        : 'bg-green-900/50 text-green-300 border-green-700/50'
+                        ? 'bg-gold/20 text-gold border-gold/40'
+                        : 'bg-white/[0.04] text-text-muted border-white/[0.06]'
                       }
-                      ${selectable ? 'cursor-pointer hover:bg-green-800/50 transition-colors' : ''}
+                      ${selectable ? 'cursor-pointer hover:bg-white/[0.08] transition-colors' : ''}
                     `}
                     onClick={() => selectable && onCardClick?.(card.id)}
-                    whileHover={selectable ? { scale: 1.1 } : undefined}
-                    whileTap={selectable ? { scale: 0.95 } : undefined}
                     layout
                   >
                     ${card.value}M

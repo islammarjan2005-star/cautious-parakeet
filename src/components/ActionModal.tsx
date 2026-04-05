@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
-import { Card as CardType, PropertyColor, Player } from '../types/game'
-import { getAvailableColors, isSetComplete, getAllPropertyCards } from '../utils/helpers'
+import { Card as CardType, PropertyColor, Player, getPlayerInitials, PLAYER_COLORS } from '../types/game'
+import { getAvailableColors, isSetComplete } from '../utils/helpers'
 import { getColorHex } from './Card'
-import { X, Target, ArrowRightLeft, Zap } from 'lucide-react'
+import {
+  X, Target, ArrowLeftRight, HandCoins, Eye, Gavel,
+  Receipt, Home, Building, ChevronsUp,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 interface ActionModalProps {
   card: CardType
@@ -23,8 +27,9 @@ export default function ActionModal({ card, onClose, onConfirm }: ActionModalPro
         <TargetPlayerModal
           title="Debt Collector"
           subtitle="Choose a player to charge $5M"
-          icon={<Zap className="text-yellow-400" />}
+          icon={HandCoins}
           opponents={opponents}
+          allPlayers={players}
           onClose={onClose}
           onSelect={(targetId) => onConfirm(targetId)}
         />
@@ -34,6 +39,7 @@ export default function ActionModal({ card, onClose, onConfirm }: ActionModalPro
       return (
         <SlyDealModal
           opponents={opponents}
+          allPlayers={players}
           onClose={onClose}
           onConfirm={onConfirm}
         />
@@ -44,6 +50,7 @@ export default function ActionModal({ card, onClose, onConfirm }: ActionModalPro
         <ForcedDealModal
           currentPlayer={currentPlayer}
           opponents={opponents}
+          allPlayers={players}
           onClose={onClose}
           onConfirm={onConfirm}
         />
@@ -53,6 +60,7 @@ export default function ActionModal({ card, onClose, onConfirm }: ActionModalPro
       return (
         <DealBreakerModal
           opponents={opponents}
+          allPlayers={players}
           onClose={onClose}
           onConfirm={onConfirm}
         />
@@ -100,22 +108,19 @@ export function RentModal({
   const player = players[currentPlayerIndex]
   const [selectedColor, setSelectedColor] = useState<PropertyColor | null>(null)
 
-  // Find available colors from rent card that match player's properties
   const availableColors = (card.rentColors || []).filter(color =>
     player.properties.some(ps => ps.color === color && ps.cards.length > 0)
   )
 
-  // Check for Double The Rent in hand
   const doubleRentCard = player.hand.find(c => c.actionType === 'double_the_rent' && c.id !== card.id)
-
   const [useDouble, setUseDouble] = useState(false)
 
   if (availableColors.length === 0) {
     return (
       <ModalWrapper onClose={onClose}>
         <div className="text-center py-4">
-          <p className="text-white/70">You don't have any matching properties to charge rent for.</p>
-          <button className="btn-secondary mt-4" onClick={onClose}>Close</button>
+          <p className="text-text-muted text-sm">No matching properties to charge rent for.</p>
+          <button className="btn-secondary text-sm mt-4" onClick={onClose}>Close</button>
         </div>
       </ModalWrapper>
     )
@@ -123,48 +128,47 @@ export function RentModal({
 
   return (
     <ModalWrapper onClose={onClose}>
-      <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-        🏠 Charge Rent
+      <h3 className="text-base font-semibold text-text-primary mb-1 flex items-center gap-2">
+        <Receipt size={16} className="text-gold" /> Charge Rent
       </h3>
-      <p className="text-xs text-white/60 mb-4">Choose which property color to charge rent for</p>
+      <p className="text-[11px] text-text-muted mb-4">Choose which property color to charge rent for</p>
 
       <div className="grid grid-cols-3 gap-2 mb-4">
         {availableColors.map(color => {
           const set = player.properties.find(ps => ps.color === color)
           if (!set) return null
           return (
-            <motion.button
+            <button
               key={color}
-              className={`rounded-xl p-3 border-2 transition-all text-center
+              className={`rounded-lg p-2.5 border transition-all text-center
                 ${selectedColor === color
-                  ? 'border-yellow-400 bg-yellow-400/10'
-                  : 'border-white/10 hover:border-white/30 bg-white/5'
+                  ? 'border-gold/50 bg-gold/[0.06]'
+                  : 'border-white/[0.06] hover:border-white/[0.12] bg-white/[0.02]'
                 }
               `}
               onClick={() => setSelectedColor(color)}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
             >
               <div
-                className="w-6 h-6 rounded-full mx-auto mb-1 border-2 border-white/30"
+                className="w-5 h-5 rounded-full mx-auto mb-1"
                 style={{ backgroundColor: getColorHex(color) }}
               />
-              <div className="text-[10px] text-white font-bold capitalize">{color}</div>
-              <div className="text-[9px] text-white/50">{set.cards.length} cards</div>
-            </motion.button>
+              <div className="text-[10px] text-text-primary font-medium capitalize">{color}</div>
+              <div className="text-[8px] text-text-muted">{set.cards.length} cards</div>
+            </button>
           )
         })}
       </div>
 
       {doubleRentCard && (
-        <label className="flex items-center gap-2 mb-4 cursor-pointer glass rounded-lg p-2">
+        <label className="flex items-center gap-2 mb-4 cursor-pointer panel rounded-lg p-2">
           <input
             type="checkbox"
             checked={useDouble}
             onChange={e => setUseDouble(e.target.checked)}
-            className="accent-yellow-400"
+            className="accent-gold"
           />
-          <span className="text-xs text-white">⚡ Double The Rent (uses extra action)</span>
+          <ChevronsUp size={12} className="text-gold" />
+          <span className="text-[11px] text-text-primary">Double The Rent (uses extra action)</span>
         </label>
       )}
 
@@ -184,41 +188,49 @@ export function RentModal({
 
 // === Target Player Modal ===
 function TargetPlayerModal({
-  title, subtitle, icon, opponents, onClose, onSelect,
+  title, subtitle, icon: Icon, opponents, allPlayers, onClose, onSelect,
 }: {
   title: string
   subtitle: string
-  icon: React.ReactNode
+  icon: LucideIcon
   opponents: Player[]
+  allPlayers: Player[]
   onClose: () => void
   onSelect: (playerId: string) => void
 }) {
   return (
     <ModalWrapper onClose={onClose}>
-      <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-        {icon} {title}
+      <h3 className="text-base font-semibold text-text-primary mb-1 flex items-center gap-2">
+        <Icon size={16} className="text-gold" /> {title}
       </h3>
-      <p className="text-xs text-white/60 mb-4">{subtitle}</p>
+      <p className="text-[11px] text-text-muted mb-4">{subtitle}</p>
 
-      <div className="space-y-2">
-        {opponents.map(opp => (
-          <motion.button
-            key={opp.id}
-            className="w-full flex items-center gap-3 p-3 rounded-xl glass hover:bg-white/15 transition-colors"
-            onClick={() => onSelect(opp.id)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <span className="text-2xl">{opp.avatar}</span>
-            <div className="text-left">
-              <div className="text-sm font-bold text-white">{opp.name}</div>
-              <div className="text-[10px] text-white/50">
-                {opp.hand.length} cards • ${opp.bank.reduce((s, c) => s + c.value, 0)}M in bank
+      <div className="space-y-1.5">
+        {opponents.map(opp => {
+          const idx = allPlayers.indexOf(opp)
+          const color = PLAYER_COLORS[idx % PLAYER_COLORS.length]
+          return (
+            <button
+              key={opp.id}
+              className="w-full flex items-center gap-3 p-2.5 rounded-lg panel hover:bg-white/[0.06] transition-colors"
+              onClick={() => onSelect(opp.id)}
+            >
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold"
+                style={{ backgroundColor: `${color}18`, color, border: `1px solid ${color}30` }}
+              >
+                {getPlayerInitials(opp.name)}
               </div>
-            </div>
-            <Target size={16} className="ml-auto text-red-400" />
-          </motion.button>
-        ))}
+              <div className="text-left">
+                <div className="text-xs font-medium text-text-primary">{opp.name}</div>
+                <div className="text-[9px] text-text-muted">
+                  {opp.hand.length} cards, ${opp.bank.reduce((s, c) => s + c.value, 0)}M in bank
+                </div>
+              </div>
+              <Target size={13} className="ml-auto text-text-muted" />
+            </button>
+          )
+        })}
       </div>
     </ModalWrapper>
   )
@@ -226,16 +238,16 @@ function TargetPlayerModal({
 
 // === Sly Deal Modal ===
 function SlyDealModal({
-  opponents, onClose, onConfirm,
+  opponents, allPlayers, onClose, onConfirm,
 }: {
   opponents: Player[]
+  allPlayers: Player[]
   onClose: () => void
   onConfirm: (targetPlayerId: string, extraData: any) => void
 }) {
   const [step, setStep] = useState<'player' | 'card'>('player')
   const [targetPlayer, setTargetPlayer] = useState<Player | null>(null)
 
-  // Filter opponents who have non-complete sets
   const validOpponents = opponents.filter(opp =>
     opp.properties.some(ps => !isSetComplete(ps) && ps.cards.length > 0)
   )
@@ -244,8 +256,8 @@ function SlyDealModal({
     return (
       <ModalWrapper onClose={onClose}>
         <div className="text-center py-4">
-          <p className="text-white/70">No opponents have stealable properties (only incomplete sets can be stolen from).</p>
-          <button className="btn-secondary mt-4" onClick={onClose}>Close</button>
+          <p className="text-text-muted text-sm">No stealable properties available.</p>
+          <button className="btn-secondary text-sm mt-4" onClick={onClose}>Close</button>
         </div>
       </ModalWrapper>
     )
@@ -256,8 +268,9 @@ function SlyDealModal({
       <TargetPlayerModal
         title="Sly Deal"
         subtitle="Choose a player to steal a property from"
-        icon={<span>🤫</span>}
+        icon={Eye}
         opponents={validOpponents}
+        allPlayers={allPlayers}
         onClose={onClose}
         onSelect={(id) => {
           setTargetPlayer(opponents.find(p => p.id === id)!)
@@ -271,31 +284,28 @@ function SlyDealModal({
 
   return (
     <ModalWrapper onClose={onClose}>
-      <h3 className="text-lg font-bold text-white mb-1">🤫 Steal a Property</h3>
-      <p className="text-xs text-white/60 mb-4">Choose a property from {targetPlayer.name}</p>
+      <h3 className="text-base font-semibold text-text-primary mb-1 flex items-center gap-2">
+        <Eye size={16} className="text-gold" /> Steal a Property
+      </h3>
+      <p className="text-[11px] text-text-muted mb-4">Choose a property from {targetPlayer.name}</p>
 
-      <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-thin">
+      <div className="space-y-1.5 max-h-[300px] overflow-y-auto scrollbar-thin">
         {stealableSets.map(set =>
           set.cards.map(card => (
-            <motion.button
+            <button
               key={card.id}
-              className="w-full flex items-center gap-3 p-2 rounded-lg glass hover:bg-white/15 transition-colors"
+              className="w-full flex items-center gap-3 p-2 rounded-lg panel hover:bg-white/[0.06] transition-colors"
               onClick={() => onConfirm(targetPlayer.id, { targetCardId: card.id })}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
             >
-              <div
-                className="w-4 h-4 rounded"
-                style={{ backgroundColor: getColorHex(set.color) }}
-              />
-              <span className="text-xs text-white font-semibold">{card.name}</span>
-            </motion.button>
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: getColorHex(set.color) }} />
+              <span className="text-xs text-text-primary font-medium">{card.name}</span>
+            </button>
           ))
         )}
       </div>
 
       <button className="btn-secondary text-sm mt-3 w-full" onClick={() => setStep('player')}>
-        ← Back
+        Back
       </button>
     </ModalWrapper>
   )
@@ -303,10 +313,11 @@ function SlyDealModal({
 
 // === Forced Deal Modal ===
 function ForcedDealModal({
-  currentPlayer, opponents, onClose, onConfirm,
+  currentPlayer, opponents, allPlayers, onClose, onConfirm,
 }: {
   currentPlayer: Player
   opponents: Player[]
+  allPlayers: Player[]
   onClose: () => void
   onConfirm: (targetPlayerId: string, extraData: any) => void
 }) {
@@ -321,26 +332,27 @@ function ForcedDealModal({
   if (step === 'my-card') {
     return (
       <ModalWrapper onClose={onClose}>
-        <h3 className="text-lg font-bold text-white mb-1">🔄 Forced Deal</h3>
-        <p className="text-xs text-white/60 mb-4">Choose YOUR property to give away</p>
+        <h3 className="text-base font-semibold text-text-primary mb-1 flex items-center gap-2">
+          <ArrowLeftRight size={16} className="text-gold" /> Forced Deal
+        </h3>
+        <p className="text-[11px] text-text-muted mb-4">Choose YOUR property to give away</p>
 
         {myStealableCards.length === 0 ? (
           <div className="text-center py-4">
-            <p className="text-white/70 text-sm">You have no properties to trade (only incomplete sets).</p>
-            <button className="btn-secondary mt-4" onClick={onClose}>Close</button>
+            <p className="text-text-muted text-sm">No properties to trade.</p>
+            <button className="btn-secondary text-sm mt-4" onClick={onClose}>Close</button>
           </div>
         ) : (
-          <div className="space-y-2 max-h-[250px] overflow-y-auto scrollbar-thin">
+          <div className="space-y-1.5 max-h-[250px] overflow-y-auto scrollbar-thin">
             {myStealableCards.map(({ card, color }) => (
-              <motion.button
+              <button
                 key={card.id}
-                className="w-full flex items-center gap-3 p-2 rounded-lg glass hover:bg-white/15"
+                className="w-full flex items-center gap-3 p-2 rounded-lg panel hover:bg-white/[0.06] transition-colors"
                 onClick={() => { setMyCardId(card.id); setStep('their-player') }}
-                whileHover={{ scale: 1.02 }}
               >
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: getColorHex(color) }} />
-                <span className="text-xs text-white font-semibold">{card.name}</span>
-              </motion.button>
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: getColorHex(color) }} />
+                <span className="text-xs text-text-primary font-medium">{card.name}</span>
+              </button>
             ))}
           </div>
         )}
@@ -357,8 +369,9 @@ function ForcedDealModal({
       <TargetPlayerModal
         title="Forced Deal"
         subtitle="Choose a player to swap with"
-        icon={<ArrowRightLeft className="text-blue-400" />}
+        icon={ArrowLeftRight}
         opponents={validOpponents}
+        allPlayers={allPlayers}
         onClose={onClose}
         onSelect={(id) => {
           setTargetPlayer(opponents.find(p => p.id === id)!)
@@ -372,27 +385,28 @@ function ForcedDealModal({
 
   return (
     <ModalWrapper onClose={onClose}>
-      <h3 className="text-lg font-bold text-white mb-1">🔄 Choose their property</h3>
-      <p className="text-xs text-white/60 mb-4">Take a property from {targetPlayer.name}</p>
+      <h3 className="text-base font-semibold text-text-primary mb-1 flex items-center gap-2">
+        <ArrowLeftRight size={16} className="text-gold" /> Choose their property
+      </h3>
+      <p className="text-[11px] text-text-muted mb-4">Take a property from {targetPlayer.name}</p>
 
-      <div className="space-y-2 max-h-[250px] overflow-y-auto scrollbar-thin">
+      <div className="space-y-1.5 max-h-[250px] overflow-y-auto scrollbar-thin">
         {theirStealableSets.map(set =>
           set.cards.map(card => (
-            <motion.button
+            <button
               key={card.id}
-              className="w-full flex items-center gap-3 p-2 rounded-lg glass hover:bg-white/15"
+              className="w-full flex items-center gap-3 p-2 rounded-lg panel hover:bg-white/[0.06] transition-colors"
               onClick={() => onConfirm(targetPlayer.id, { targetCardId: card.id, sourceCardId: myCardId })}
-              whileHover={{ scale: 1.02 }}
             >
-              <div className="w-4 h-4 rounded" style={{ backgroundColor: getColorHex(set.color) }} />
-              <span className="text-xs text-white font-semibold">{card.name}</span>
-            </motion.button>
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: getColorHex(set.color) }} />
+              <span className="text-xs text-text-primary font-medium">{card.name}</span>
+            </button>
           ))
         )}
       </div>
 
       <button className="btn-secondary text-sm mt-3 w-full" onClick={() => setStep('my-card')}>
-        ← Start Over
+        Start Over
       </button>
     </ModalWrapper>
   )
@@ -400,9 +414,10 @@ function ForcedDealModal({
 
 // === Deal Breaker Modal ===
 function DealBreakerModal({
-  opponents, onClose, onConfirm,
+  opponents, allPlayers, onClose, onConfirm,
 }: {
   opponents: Player[]
+  allPlayers: Player[]
   onClose: () => void
   onConfirm: (targetPlayerId: string, extraData: any) => void
 }) {
@@ -416,8 +431,8 @@ function DealBreakerModal({
     return (
       <ModalWrapper onClose={onClose}>
         <div className="text-center py-4">
-          <p className="text-white/70">No opponents have complete sets to steal.</p>
-          <button className="btn-secondary mt-4" onClick={onClose}>Close</button>
+          <p className="text-text-muted text-sm">No complete sets to steal.</p>
+          <button className="btn-secondary text-sm mt-4" onClick={onClose}>Close</button>
         </div>
       </ModalWrapper>
     )
@@ -425,34 +440,34 @@ function DealBreakerModal({
 
   return (
     <ModalWrapper onClose={onClose}>
-      <h3 className="text-lg font-bold text-white mb-1">💥 Deal Breaker</h3>
-      <p className="text-xs text-white/60 mb-4">Steal a complete property set!</p>
+      <h3 className="text-base font-semibold text-text-primary mb-1 flex items-center gap-2">
+        <Gavel size={16} className="text-gold" /> Deal Breaker
+      </h3>
+      <p className="text-[11px] text-text-muted mb-4">Steal a complete property set</p>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {completeSets.map(({ player, set }) => (
-          <motion.button
+          <button
             key={`${player.id}-${set.color}`}
-            className="w-full flex items-center gap-3 p-3 rounded-xl glass hover:bg-white/15 transition-colors"
+            className="w-full flex items-center gap-3 p-2.5 rounded-lg panel hover:bg-white/[0.06] transition-colors"
             onClick={() => onConfirm(player.id, { targetColor: set.color })}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
           >
             <div
-              className="w-8 h-8 rounded-lg border-2 border-yellow-400/50"
+              className="w-7 h-7 rounded-md"
               style={{ backgroundColor: getColorHex(set.color) }}
             />
             <div className="text-left">
-              <div className="text-xs font-bold text-white capitalize">{set.color} Set ({set.cards.length} cards)</div>
-              <div className="text-[10px] text-white/50">from {player.name}</div>
+              <div className="text-xs font-medium text-text-primary capitalize">{set.color} Set ({set.cards.length} cards)</div>
+              <div className="text-[9px] text-text-muted">from {player.name}</div>
             </div>
-          </motion.button>
+          </button>
         ))}
       </div>
     </ModalWrapper>
   )
 }
 
-// === Building (House/Hotel) Modal ===
+// === Building Modal ===
 function BuildingModal({
   title, subtitle, player, filter, onClose, onSelect,
 }: {
@@ -469,8 +484,8 @@ function BuildingModal({
     return (
       <ModalWrapper onClose={onClose}>
         <div className="text-center py-4">
-          <p className="text-white/70">No eligible property sets.</p>
-          <button className="btn-secondary mt-4" onClick={onClose}>Close</button>
+          <p className="text-text-muted text-sm">No eligible property sets.</p>
+          <button className="btn-secondary text-sm mt-4" onClick={onClose}>Close</button>
         </div>
       </ModalWrapper>
     )
@@ -478,26 +493,28 @@ function BuildingModal({
 
   return (
     <ModalWrapper onClose={onClose}>
-      <h3 className="text-lg font-bold text-white mb-1">{title}</h3>
-      <p className="text-xs text-white/60 mb-4">{subtitle}</p>
+      <h3 className="text-base font-semibold text-text-primary mb-1 flex items-center gap-2">
+        {title.includes('House') ? <Home size={16} className="text-gold" /> : <Building size={16} className="text-gold" />}
+        {title}
+      </h3>
+      <p className="text-[11px] text-text-muted mb-4">{subtitle}</p>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {validSets.map(set => (
-          <motion.button
+          <button
             key={set.color}
-            className="w-full flex items-center gap-3 p-3 rounded-xl glass hover:bg-white/15"
+            className="w-full flex items-center gap-3 p-2.5 rounded-lg panel hover:bg-white/[0.06] transition-colors"
             onClick={() => onSelect(set.color)}
-            whileHover={{ scale: 1.02 }}
           >
             <div
-              className="w-8 h-8 rounded-lg border-2 border-white/20"
+              className="w-7 h-7 rounded-md"
               style={{ backgroundColor: getColorHex(set.color) }}
             />
             <div className="text-left">
-              <div className="text-xs font-bold text-white capitalize">{set.color}</div>
-              <div className="text-[10px] text-white/50">{set.cards.length} properties</div>
+              <div className="text-xs font-medium text-text-primary capitalize">{set.color}</div>
+              <div className="text-[9px] text-text-muted">{set.cards.length} properties</div>
             </div>
-          </motion.button>
+          </button>
         ))}
       </div>
     </ModalWrapper>
@@ -508,24 +525,24 @@ function BuildingModal({
 function ModalWrapper({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
       <motion.div
-        className="glass-dark rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto scrollbar-thin relative"
-        initial={{ scale: 0.8, y: 50 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.8, y: 50 }}
+        className="panel-raised rounded-xl p-5 max-w-md w-full max-h-[80vh] overflow-y-auto scrollbar-thin relative"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
         onClick={e => e.stopPropagation()}
       >
         <button
-          className="absolute top-3 right-3 text-white/40 hover:text-white transition-colors"
+          className="absolute top-3 right-3 text-text-muted hover:text-text-primary transition-colors"
           onClick={onClose}
         >
-          <X size={18} />
+          <X size={16} />
         </button>
         {children}
       </motion.div>

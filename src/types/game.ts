@@ -151,7 +151,12 @@ export const PROPERTY_NAMES: Record<PropertyColor, string[]> = {
   utility:  ['Electric Company', 'Water Works'],
 }
 
-export const PLAYER_AVATARS = ['🎩', '🚗', '🐕', '👢', '🎪', '🏰', '⛵', '🎸']
+export function getPlayerInitials(name: string): string {
+  const parts = name.trim().split(/\s+/)
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+  return name.slice(0, 2).toUpperCase()
+}
+
 export const PLAYER_COLORS = [
-  '#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA',
+  '#B45B5B', '#4A7FA5', '#5A8F5A', '#C0883A', '#8A6AAE',
 ]
