@@ -46,7 +46,7 @@ export default function GameOverScreen() {
       ))}
 
       <motion.div
-        className="text-center frost-solid rounded-3xl p-10 max-w-lg mx-4"
+        className="text-center chrome-raised rounded-3xl p-10 max-w-lg mx-4"
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2, type: 'spring', damping: 15 }}
@@ -87,7 +87,7 @@ export default function GameOverScreen() {
           >
             {winner.avatar}
           </div>
-          <h2 className="text-3xl font-display text-game-text">
+          <h2 className="text-3xl font-display text-white">
             {winner.name}
           </h2>
         </motion.div>

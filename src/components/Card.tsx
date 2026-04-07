@@ -115,9 +115,9 @@ export default function Card({
           flex items-center justify-center overflow-hidden ${className}`}
         style={{
           ...style,
-          background: 'linear-gradient(135deg, #667EEA 0%, #764BA2 100%)',
-          borderColor: '#5A6FD1',
-          boxShadow: '0 6px 0 rgba(90,60,130,0.4)',
+          background: 'linear-gradient(145deg, #1a2744 0%, #0d1b2a 100%)',
+          borderColor: '#3a5a80',
+          boxShadow: '0 6px 0 rgba(10,20,35,0.5)',
         }}
         whileHover={{ y: -1 }}
       >

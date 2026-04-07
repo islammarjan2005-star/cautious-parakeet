@@ -154,7 +154,7 @@ export function RentModal({
               className={`rounded-xl p-3 border-3 transition-all text-center
                 ${selectedColor === color
                   ? 'border-accent bg-accent/10 ring-2 ring-accent/30'
-                  : 'border-gray-200 bg-white hover:border-primary/40'
+                  : 'border-gray-200 bg-white hover:border-accent/40'
                 }
               `}
               onClick={() => setSelectedColor(color)}
@@ -228,7 +228,7 @@ function TargetPlayerModal({
           return (
             <motion.button
               key={opp.id}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-primary transition-colors"
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-accent transition-colors"
               style={{ boxShadow: '0 3px 0 rgba(0,0,0,0.06)' }}
               onClick={() => onSelect(opp.id)}
               whileTap={{ scale: 0.97, y: 2 }}
@@ -319,7 +319,7 @@ function SlyDealModal({
           set.cards.map(card => (
             <button
               key={card.id}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-primary transition-colors"
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-accent transition-colors"
               style={{ boxShadow: '0 3px 0 rgba(0,0,0,0.06)' }}
               onClick={() => onConfirm(targetPlayer.id, { targetCardId: card.id })}
             >
@@ -377,7 +377,7 @@ function ForcedDealModal({
             {myStealableCards.map(({ card, color }) => (
               <button
                 key={card.id}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-primary transition-colors"
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-accent transition-colors"
                 style={{ boxShadow: '0 3px 0 rgba(0,0,0,0.06)' }}
                 onClick={() => { setMyCardId(card.id); setStep('their-player') }}
               >
@@ -432,7 +432,7 @@ function ForcedDealModal({
           set.cards.map(card => (
             <button
               key={card.id}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-primary transition-colors"
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-accent transition-colors"
               style={{ boxShadow: '0 3px 0 rgba(0,0,0,0.06)' }}
               onClick={() => onConfirm(targetPlayer.id, { targetCardId: card.id, sourceCardId: myCardId })}
             >
@@ -553,7 +553,7 @@ function BuildingModal({
         {validSets.map(set => (
           <motion.button
             key={set.color}
-            className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-primary transition-colors"
+            className="w-full flex items-center gap-3 p-3 rounded-xl bg-white border-2 border-gray-200 hover:border-accent transition-colors"
             style={{ boxShadow: '0 3px 0 rgba(0,0,0,0.06)' }}
             onClick={() => onSelect(set.color)}
             whileTap={{ scale: 0.97, y: 2 }}
@@ -584,7 +584,7 @@ function ModalWrapper({ children, onClose }: { children: React.ReactNode; onClos
       onClick={onClose}
     >
       <motion.div
-        className="frost-solid rounded-3xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto scrollbar-thin relative"
+        className="chrome-raised rounded-3xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto scrollbar-thin relative"
         initial={{ opacity: 0, y: 30, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 30, scale: 0.9 }}

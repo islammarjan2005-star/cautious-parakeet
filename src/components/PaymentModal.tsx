@@ -157,7 +157,7 @@ export default function PaymentModal() {
                         rounded-full px-3 py-1 text-xs font-extrabold border-2 transition-all
                         ${isSelected
                           ? 'bg-accent text-game-text border-accent-dark ring-2 ring-accent/30'
-                          : 'bg-white text-game-text border-gray-200 hover:border-primary'
+                          : 'bg-white text-game-text border-gray-200 hover:border-accent'
                         }
                       `}
                       style={{ boxShadow: isSelected ? '0 2px 0 #C6A800' : '0 2px 0 rgba(0,0,0,0.06)' }}
@@ -188,7 +188,7 @@ export default function PaymentModal() {
                           w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs border-2 transition-all
                           ${isSelected
                             ? 'bg-accent/10 border-accent text-game-text ring-2 ring-accent/20'
-                            : 'bg-white border-gray-200 text-game-text hover:border-primary'
+                            : 'bg-white border-gray-200 text-game-text hover:border-accent'
                           }
                         `}
                         style={{ boxShadow: '0 2px 0 rgba(0,0,0,0.06)' }}

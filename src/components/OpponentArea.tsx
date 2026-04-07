@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion'
 import { Player, PLAYER_COLORS } from '../types/game'
-import PropertyArea from './PropertyArea'
-import BankArea from './BankArea'
 import { countCompleteSets, getTotalValue } from '../utils/helpers'
 import { Trophy, CreditCard } from 'lucide-react'
 
@@ -17,72 +15,62 @@ export default function OpponentArea({ player, index, isTarget, onClick }: Oppon
   const bankTotal = getTotalValue(player.bank)
   const color = PLAYER_COLORS[index % PLAYER_COLORS.length]
 
+  const Wrapper = onClick ? motion.div : 'div'
+  const motionProps = onClick
+    ? { whileTap: { scale: 0.96 } }
+    : {}
+
   return (
-    <motion.div
+    <Wrapper
       className={`
-        frost rounded-2xl p-2.5 relative overflow-hidden
-        ${isTarget ? 'ring-2 ring-accent cursor-pointer hover:bg-white/5' : ''}
+        flex items-center gap-2 chrome-panel px-3 py-2 min-w-[140px]
+        ${isTarget ? 'ring-2 ring-accent cursor-pointer' : ''}
       `}
       onClick={onClick}
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
+      {...motionProps}
     >
-      {/* Color accent bar */}
+      {/* Avatar */}
       <div
-        className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
-        style={{ backgroundColor: color }}
-      />
+        className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 border-2"
+        style={{
+          backgroundColor: `${color}25`,
+          borderColor: color,
+        }}
+      >
+        {player.avatar}
+      </div>
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-2 mt-0.5">
-        <div className="flex items-center gap-2">
+      {/* Name + stats */}
+      <div className="min-w-0">
+        <div className="text-[11px] font-bold text-white truncate max-w-[70px]">
+          {player.name}
+        </div>
+        <div className="text-[9px] text-white/60 flex items-center gap-1">
+          <span>${bankTotal}M</span>
+          <span>|</span>
+          <span className="flex items-center gap-0.5">
+            <CreditCard size={7} />
+            {player.hand.length}
+          </span>
+        </div>
+      </div>
+
+      {/* Complete sets dots */}
+      <div className="flex items-center gap-0.5 ml-auto shrink-0">
+        {[0, 1, 2].map(i => (
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-base border-2"
-            style={{
-              backgroundColor: `${color}25`,
-              borderColor: color,
-              boxShadow: `0 2px 0 ${color}50`,
-            }}
+            key={i}
+            className={`w-3 h-3 rounded-full flex items-center justify-center
+              ${i < completeSets
+                ? 'bg-accent border border-accent-dark'
+                : 'bg-white/10 border border-white/20'
+              }
+            `}
           >
-            {player.avatar}
+            {i < completeSets && <Trophy size={6} className="text-game-text" />}
           </div>
-          <div>
-            <div className="text-[11px] font-bold text-white truncate max-w-[100px]">{player.name}</div>
-            <div className="flex items-center gap-2 text-[8px] font-semibold text-white/60">
-              <span className="flex items-center gap-0.5">
-                <CreditCard size={7} />
-                {player.hand.length}
-              </span>
-              <span>${bankTotal}M</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-1">
-          {[0, 1, 2].map(i => (
-            <div
-              key={i}
-              className={`w-4 h-4 rounded-full border-2 flex items-center justify-center
-                ${i < completeSets
-                  ? 'bg-accent border-accent-dark'
-                  : 'bg-white/10 border-white/20'
-                }
-              `}
-              style={i < completeSets ? { boxShadow: '0 1px 0 #C6A800' } : {}}
-            >
-              {i < completeSets && <Trophy size={8} className="text-game-text" />}
-            </div>
-          ))}
-        </div>
+        ))}
       </div>
-
-      {/* Properties */}
-      <PropertyArea player={player} compact />
-
-      {/* Bank */}
-      <div className="mt-2">
-        <BankArea cards={player.bank} compact />
-      </div>
-    </motion.div>
+    </Wrapper>
   )
 }

@@ -77,44 +77,46 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
       <AnimatePresence>
         {selectedCard && isActionPhase && (
           <motion.div
-            className="absolute -top-16 left-1/2 -translate-x-1/2 flex gap-2 z-50"
+            className="absolute -top-20 left-1/2 -translate-x-1/2 z-50"
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
           >
-            <motion.button
-              className="px-4 py-2 bg-[#66BB6A] text-white text-xs font-extrabold rounded-btn flex items-center gap-1.5 uppercase tracking-wide"
-              style={{ boxShadow: '0 4px 0 #2E7D32' }}
-              onClick={() => handleAction('bank')}
-              whileTap={{ scale: 0.92, y: 2 }}
-            >
-              <Landmark size={13} />
-              Bank ${selectedCard.value}M
-            </motion.button>
-
-            {canPlayAsProperty(selectedCard) && (
+            <div className="flex gap-2 justify-center items-center">
               <motion.button
-                className="px-4 py-2 bg-[#29B6F6] text-white text-xs font-extrabold rounded-btn flex items-center gap-1.5 uppercase tracking-wide"
-                style={{ boxShadow: '0 4px 0 #0288D1' }}
-                onClick={() => handleAction('property')}
+                className="px-4 py-2 bg-[#66BB6A] text-white text-xs font-extrabold rounded-btn flex items-center gap-1.5 uppercase tracking-wide"
+                style={{ boxShadow: '0 4px 0 #2E7D32' }}
+                onClick={() => handleAction('bank')}
                 whileTap={{ scale: 0.92, y: 2 }}
               >
-                <MapPin size={13} />
-                Property
+                <Landmark size={14} />
+                Bank ${selectedCard.value}M
               </motion.button>
-            )}
 
-            {canPlayAsAction(selectedCard) && canPlayCard(selectedCard, player, actionsPlayedThisTurn) && (
-              <motion.button
-                className="px-4 py-2 bg-[#FF7043] text-white text-xs font-extrabold rounded-btn flex items-center gap-1.5 uppercase tracking-wide"
-                style={{ boxShadow: '0 4px 0 #E64A19' }}
-                onClick={() => handleAction('play')}
-                whileTap={{ scale: 0.92, y: 2 }}
-              >
-                <Play size={13} />
-                Play
-              </motion.button>
-            )}
+              {canPlayAsProperty(selectedCard) && (
+                <motion.button
+                  className="px-4 py-2 bg-[#29B6F6] text-white text-xs font-extrabold rounded-btn flex items-center gap-1.5 uppercase tracking-wide"
+                  style={{ boxShadow: '0 4px 0 #0288D1' }}
+                  onClick={() => handleAction('property')}
+                  whileTap={{ scale: 0.92, y: 2 }}
+                >
+                  <MapPin size={14} />
+                  Property
+                </motion.button>
+              )}
+
+              {canPlayAsAction(selectedCard) && canPlayCard(selectedCard, player, actionsPlayedThisTurn) && (
+                <motion.button
+                  className="btn-action px-6 py-3 text-white text-sm font-extrabold rounded-btn flex items-center gap-2 uppercase tracking-wide"
+                  style={{ background: '#D32F2F', boxShadow: '0 4px 0 #9A0007', fontSize: '1rem' }}
+                  onClick={() => handleAction('play')}
+                  whileTap={{ scale: 0.92, y: 2 }}
+                >
+                  <Play size={20} />
+                  PLAY
+                </motion.button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -123,7 +125,7 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
       <AnimatePresence>
         {showColorPicker && (
           <motion.div
-            className="absolute -top-28 left-1/2 -translate-x-1/2 frost-solid rounded-2xl p-4 z-50"
+            className="absolute -top-28 left-1/2 -translate-x-1/2 chrome-raised rounded-2xl p-4 z-50"
             initial={{ opacity: 0, y: 10, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}

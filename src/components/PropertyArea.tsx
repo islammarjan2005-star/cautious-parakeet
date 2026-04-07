@@ -21,7 +21,7 @@ export default function PropertyArea({ player, isCurrentPlayer, compact, onPrope
   }
 
   return (
-    <div className={`flex gap-2 flex-wrap ${compact ? 'max-h-[100px]' : ''} overflow-y-auto scrollbar-thin`}>
+    <div className={`flex flex-col ${compact ? 'max-h-[100px]' : ''} overflow-y-auto scrollbar-thin`}>
       {player.properties.map((set) => (
         <PropertySetDisplay
           key={set.color}
@@ -46,89 +46,98 @@ function PropertySetDisplay({
   const complete = isSetComplete(set)
   const required = PROPERTY_SET_SIZES[set.color]
   const colorHex = getColorHex(set.color)
-  const rents = RENT_AMOUNTS[set.color]
+
+  if (compact) {
+    return (
+      <motion.div
+        className="flex items-center gap-2 px-2 py-1 mb-1 rounded-lg"
+        style={{ backgroundColor: `${colorHex}15` }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        layout
+      >
+        <span
+          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+          style={{ backgroundColor: colorHex }}
+        />
+        <span className="text-white/80 text-[10px] font-semibold truncate flex-1">
+          {COLOR_DISPLAY_NAMES[set.color]}
+        </span>
+        {set.hasHouse && <span className="text-[10px]">{'\u{1F3E0}'}</span>}
+        {set.hasHotel && <span className="text-[10px]">{'\u{1F3E8}'}</span>}
+        <span className="text-white/50 text-[10px] font-bold flex-shrink-0">
+          {set.cards.length}/{required}
+        </span>
+        {complete && <span className="text-[10px] text-green-400">{'\u2714'}</span>}
+      </motion.div>
+    )
+  }
 
   return (
     <motion.div
-      className={`
-        rounded-xl border-2 p-1.5 relative bg-white/10
-        ${complete ? 'border-success ring-2 ring-success/30' : 'border-white/20'}
-        ${compact ? 'min-w-[80px]' : 'min-w-[100px]'}
-      `}
+      className={`flex items-center px-3 py-2 rounded-xl mb-1.5 transition-shadow ${
+        complete ? 'shadow-[0_0_8px_rgba(76,175,80,0.4)]' : ''
+      }`}
+      style={{
+        backgroundColor: `${colorHex}20`,
+        border: `2px solid ${complete ? '#4CAF50' : colorHex}`,
+      }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       layout
     >
-      {/* Color header */}
+      {/* Color label */}
       <div
-        className="rounded-lg px-2 py-1 flex items-center justify-between mb-1"
+        className="text-white font-bold text-xs uppercase w-16 flex-shrink-0 rounded-md px-1.5 py-0.5 text-center"
         style={{ backgroundColor: colorHex }}
       >
-        <span className="text-[8px] font-extrabold text-white uppercase tracking-wide truncate">
-          {COLOR_DISPLAY_NAMES[set.color]}
-        </span>
-        <span className="text-[7px] text-white/80 font-bold bg-white/20 rounded-full px-1.5">
-          {set.cards.length}/{required}
-        </span>
+        {COLOR_DISPLAY_NAMES[set.color]}
       </div>
 
-      {/* Complete indicator */}
-      {complete && (
-        <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-success flex items-center justify-center z-10 text-white text-[10px] font-bold border-2 border-white"
-          style={{ boxShadow: '0 2px 0 #2E7D32' }}>
-          {'\u2714'}
-        </div>
-      )}
-
-      {/* Property cards stacked */}
-      <div className="space-y-0.5">
+      {/* Property name pills */}
+      <div className="flex-1 flex gap-1.5 flex-wrap text-white/90 text-[11px] ml-3">
         {set.cards.map((card, i) => (
-          <motion.div
+          <motion.span
             key={card.id}
             className={`
-              rounded-md px-1.5 py-0.5 text-[7.5px] font-bold truncate text-white
-              ${selectableForSteal && !complete ? 'cursor-pointer hover:ring-2 hover:ring-accent transition-all' : ''}
+              rounded-full px-2 py-0.5 font-semibold
+              ${selectableForSteal && !complete
+                ? 'cursor-pointer hover:ring-2 hover:ring-accent hover:brightness-125 transition-all'
+                : ''}
             `}
-            style={{ backgroundColor: `${colorHex}CC` }}
+            style={{ backgroundColor: `${colorHex}55` }}
             onClick={() => selectableForSteal && !complete && onCardClick?.(card.id, set.color)}
-            initial={{ opacity: 0, x: -10 }}
+            initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.03 }}
           >
             {card.name}
-          </motion.div>
+          </motion.span>
         ))}
-      </div>
-
-      {/* House / Hotel indicators */}
-      <div className="flex gap-1 mt-1 justify-center">
+        {/* House / Hotel badges inline */}
         {set.hasHouse && (
-          <div className="flex items-center gap-0.5 bg-[#66BB6A] rounded-full px-1.5 py-0.5">
-            <span className="text-[8px]">{'\u{1F3E0}'}</span>
-            <span className="text-[6px] text-white font-bold">House</span>
-          </div>
+          <span className="rounded-full px-1.5 py-0.5 bg-[#66BB6A]/30 text-[10px]">
+            {'\u{1F3E0}'} House
+          </span>
         )}
         {set.hasHotel && (
-          <div className="flex items-center gap-0.5 bg-[#FF7043] rounded-full px-1.5 py-0.5">
-            <span className="text-[8px]">{'\u{1F3E8}'}</span>
-            <span className="text-[6px] text-white font-bold">Hotel</span>
-          </div>
+          <span className="rounded-full px-1.5 py-0.5 bg-[#FF7043]/30 text-[10px]">
+            {'\u{1F3E8}'} Hotel
+          </span>
         )}
       </div>
 
-      {/* Rent preview */}
-      {!compact && rents && (
-        <div className="mt-1 flex gap-0.5 justify-center">
-          {rents.map((r, i) => (
-            <div
-              key={i}
-              className={`text-[6px] px-1 rounded-full font-bold ${i < set.cards.length ? 'bg-accent/30 text-accent-dark' : 'bg-white/10 text-white/30'}`}
-            >
-              ${r}M
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Right side: completion badge + count */}
+      <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+        {complete && (
+          <span className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-white text-[10px] font-bold">
+            {'\u2714'}
+          </span>
+        )}
+        <span className="text-white/60 text-[10px] font-bold bg-white/10 rounded-full px-2 py-0.5">
+          {set.cards.length}/{required}
+        </span>
+      </div>
     </motion.div>
   )
 }
