@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import {
   Card, GamePhase, GameState, Player, PropertyColor, PropertySet,
   PendingAction, GameLogEntry, PROPERTY_SET_SIZES, RENT_AMOUNTS,
-  getPlayerInitials,
+  PLAYER_AVATARS,
 } from '../types/game'
 import { createDeck, shuffleDeck } from '../utils/deck'
 import {
@@ -93,7 +93,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const players: Player[] = playerNames.map((name, i) => ({
       id: `player_${i}`,
       name,
-      avatar: getPlayerInitials(name),
+      avatar: PLAYER_AVATARS[i % PLAYER_AVATARS.length],
       hand: [],
       bank: [],
       properties: [],

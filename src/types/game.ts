@@ -157,6 +157,8 @@ export function getPlayerInitials(name: string): string {
   return name.slice(0, 2).toUpperCase()
 }
 
+export const PLAYER_AVATARS = ['\u{1F98A}', '\u{1F438}', '\u{1F981}', '\u{1F419}', '\u{1F984}']
+
 export const PLAYER_COLORS = [
-  '#B45B5B', '#4A7FA5', '#5A8F5A', '#C0883A', '#8A6AAE',
+  '#F44336', '#2196F3', '#4CAF50', '#FF9800', '#9C27B0',
 ]

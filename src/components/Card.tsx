@@ -1,11 +1,5 @@
 import { motion } from 'framer-motion'
 import { Card as CardType, PropertyColor, COLOR_DISPLAY_NAMES } from '../types/game'
-import {
-  DollarSign, MapPin, Receipt, Palette, Shuffle,
-  ArrowRight, Gavel, Eye, ArrowLeftRight, HandCoins,
-  Gift, ShieldX, Home, Building, ChevronsUp,
-} from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
 
 interface CardProps {
   card: CardType
@@ -25,40 +19,29 @@ const SIZE_CLASSES = {
   lg: 'w-32 h-[179px] text-xs',
 }
 
-const ICON_SIZES = { sm: 10, md: 14, lg: 18 }
-const BAND_HEIGHTS = { sm: 'h-6', md: 'h-10', lg: 'h-14' }
+const BAND_HEIGHTS = { sm: 'h-7', md: 'h-11', lg: 'h-16' }
+const EMOJI_SIZES = { sm: 'text-sm', md: 'text-xl', lg: 'text-3xl' }
+const MONEY_SIZES = { sm: 'text-base', md: 'text-2xl', lg: 'text-4xl' }
 
-function getCardBackground(card: CardType): string {
-  if (card.type === 'money') return 'card-money'
-  if (card.type === 'rent') return 'card-rent'
-  if (card.type === 'action') return 'card-action'
-  if (card.type === 'wild_multicolor') return 'card-property-wild'
-  if (card.type === 'wild_property' && card.colors) {
-    return `card-property-${card.colors[0]}`
-  }
-  if (card.color) return `card-property-${card.color}`
-  return 'card-action'
-}
-
-function getCardLucideIcon(card: CardType): LucideIcon {
-  if (card.type === 'money') return DollarSign
-  if (card.type === 'rent') return Receipt
-  if (card.type === 'wild_multicolor') return Palette
-  if (card.type === 'wild_property') return Shuffle
-  if (card.type === 'property') return MapPin
+function getCardEmoji(card: CardType): string {
+  if (card.type === 'money') return '\u{1F4B5}'
+  if (card.type === 'rent') return '\u{1F3E0}'
+  if (card.type === 'wild_multicolor') return '\u{1F308}'
+  if (card.type === 'wild_property') return '\u{1F500}'
+  if (card.type === 'property') return '\u{1F3D8}\uFE0F'
 
   switch (card.actionType) {
-    case 'pass_go': return ArrowRight
-    case 'deal_breaker': return Gavel
-    case 'sly_deal': return Eye
-    case 'forced_deal': return ArrowLeftRight
-    case 'debt_collector': return HandCoins
-    case 'its_my_birthday': return Gift
-    case 'just_say_no': return ShieldX
-    case 'house': return Home
-    case 'hotel': return Building
-    case 'double_the_rent': return ChevronsUp
-    default: return MapPin
+    case 'pass_go': return '\u{1F3C3}'
+    case 'deal_breaker': return '\u{1F4A5}'
+    case 'sly_deal': return '\u{1F60F}'
+    case 'forced_deal': return '\u{1F500}'
+    case 'debt_collector': return '\u{1F4B0}'
+    case 'its_my_birthday': return '\u{1F382}'
+    case 'just_say_no': return '\u{1F6AB}'
+    case 'house': return '\u{1F3E0}'
+    case 'hotel': return '\u{1F3E8}'
+    case 'double_the_rent': return '\u26A1'
+    default: return '\u{1F3B4}'
   }
 }
 
@@ -78,171 +61,212 @@ function getActionDescription(card: CardType): string {
   }
 }
 
-function getActionBandColor(card: CardType): string {
+function getActionGradient(card: CardType): string {
   switch (card.actionType) {
-    case 'pass_go': return '#4A7FA5'
-    case 'deal_breaker': return '#8B3A3A'
-    case 'sly_deal': return '#6B5B73'
-    case 'forced_deal': return '#5A6B7A'
-    case 'debt_collector': return '#7A6B3A'
-    case 'its_my_birthday': return '#7A5A6B'
-    case 'just_say_no': return '#8B4A4A'
-    case 'house': return '#5A8F5A'
-    case 'hotel': return '#8B5A3A'
-    case 'double_the_rent': return '#6B6B3A'
-    default: return '#5A6B7A'
+    case 'pass_go': return 'linear-gradient(135deg, #43E97B, #38F9D7)'
+    case 'deal_breaker': return 'linear-gradient(135deg, #FF6B6B, #FF8E53)'
+    case 'sly_deal': return 'linear-gradient(135deg, #A18CD1, #FBC2EB)'
+    case 'forced_deal': return 'linear-gradient(135deg, #667EEA, #764BA2)'
+    case 'debt_collector': return 'linear-gradient(135deg, #FFD600, #FF9800)'
+    case 'its_my_birthday': return 'linear-gradient(135deg, #F093FB, #F5576C)'
+    case 'just_say_no': return 'linear-gradient(135deg, #FF5252, #FF1744)'
+    case 'house': return 'linear-gradient(135deg, #66BB6A, #43A047)'
+    case 'hotel': return 'linear-gradient(135deg, #FF7043, #F4511E)'
+    case 'double_the_rent': return 'linear-gradient(135deg, #FFD600, #FF6D00)'
+    default: return 'linear-gradient(135deg, #667EEA, #764BA2)'
   }
+}
+
+function getMoneyColor(value: number): string {
+  switch (value) {
+    case 1: return '#FF4081'
+    case 2: return '#40C4FF'
+    case 3: return '#7C4DFF'
+    case 4: return '#FF6D00'
+    case 5: return '#FF1744'
+    case 10: return '#FFD600'
+    default: return '#66BB6A'
+  }
+}
+
+function getCardCssClass(card: CardType): string {
+  if (card.type === 'money') return 'card-money'
+  if (card.type === 'rent') return 'card-rent'
+  if (card.type === 'action') return 'card-action'
+  if (card.type === 'wild_multicolor') return 'card-property-wild'
+  if (card.type === 'wild_property' && card.colors) {
+    return `card-property-${card.colors[0]}`
+  }
+  if (card.color) return `card-property-${card.color}`
+  return 'card-action'
 }
 
 export default function Card({
   card, onClick, size = 'md', isPlayable = false,
   isSelected = false, faceDown = false, style, className = '', showValue = true,
 }: CardProps) {
-  const iconSize = ICON_SIZES[size]
   const bandHeight = BAND_HEIGHTS[size]
+  const emojiSize = EMOJI_SIZES[size]
 
   if (faceDown) {
     return (
       <motion.div
-        className={`${SIZE_CLASSES[size]} rounded-lg border cursor-default select-none
-          shadow-card flex items-center justify-center ${className}`}
+        className={`${SIZE_CLASSES[size]} rounded-card border-3 cursor-default select-none
+          flex items-center justify-center overflow-hidden ${className}`}
         style={{
           ...style,
-          background: 'linear-gradient(145deg, #5C1A1A 0%, #4A1515 50%, #3D1010 100%)',
-          borderColor: '#3a0f0f',
+          background: 'linear-gradient(135deg, #667EEA 0%, #764BA2 100%)',
+          borderColor: '#5A6FD1',
+          boxShadow: '0 6px 0 rgba(90,60,130,0.4)',
         }}
         whileHover={{ y: -1 }}
       >
-        <div className="text-center opacity-40">
-          <div className={`font-semibold text-amber-200/70 tracking-wider ${size === 'sm' ? 'text-xs' : size === 'md' ? 'text-base' : 'text-xl'}`}>
+        <div className="text-center">
+          <div className={`font-display text-white/80 ${size === 'sm' ? 'text-lg' : size === 'md' ? 'text-2xl' : 'text-3xl'}`}>
             M
           </div>
+          <div className="text-white/30 text-[8px]">{'\u2B50'}</div>
         </div>
       </motion.div>
     )
   }
 
-  const bgClass = getCardBackground(card)
-  const Icon = getCardLucideIcon(card)
-  const bandColor = card.type === 'property' && card.color
-    ? getColorHex(card.color)
-    : card.type === 'action'
-    ? getActionBandColor(card)
-    : card.type === 'money'
-    ? '#5A7A5A'
-    : card.type === 'rent'
-    ? '#7A5A3A'
-    : card.type === 'wild_multicolor'
-    ? '#6B5B73'
-    : card.type === 'wild_property' && card.colors
-    ? getColorHex(card.colors[0])
-    : '#5A6B7A'
+  const cssClass = getCardCssClass(card)
 
   return (
     <motion.div
       className={`
-        ${SIZE_CLASSES[size]} ${bgClass} rounded-lg border select-none
+        ${SIZE_CLASSES[size]} card-base ${cssClass} select-none
         flex flex-col overflow-hidden relative
-        ${isPlayable ? 'border-gold/40 cursor-pointer' : ''}
-        ${isSelected ? 'shadow-card-selected -translate-y-2 z-50' : 'shadow-card'}
-        ${onClick ? 'cursor-pointer hover:shadow-card-hover hover:-translate-y-0.5' : ''}
+        ${isPlayable ? 'cursor-pointer ring-2 ring-accent/50' : ''}
+        ${isSelected ? 'z-50' : ''}
+        ${onClick ? 'cursor-pointer' : ''}
         ${className}
       `}
-      style={style}
+      style={{
+        ...style,
+        ...(isSelected ? {
+          transform: 'translateY(-16px)',
+          boxShadow: '0 0 0 4px #FFD600, 0 8px 0 rgba(0,0,0,0.15)',
+        } : {}),
+      }}
       onClick={onClick}
-      whileHover={onClick ? { y: -2 } : undefined}
-      whileTap={onClick ? { scale: 0.98 } : undefined}
+      whileHover={onClick && !isSelected ? { y: -4 } : undefined}
+      whileTap={onClick ? { scale: 0.95 } : undefined}
       layout
     >
-      {/* Color band at top */}
-      <div
-        className={`${bandHeight} w-full flex items-center justify-center relative overflow-hidden`}
-        style={{ backgroundColor: bandColor }}
-      >
-        {/* Wild property: diagonal split */}
-        {card.type === 'wild_property' && card.colors && card.colors.length >= 2 && (
+      {/* Color band / header */}
+      {card.type === 'money' ? (
+        /* Money card: big denomination */
+        <div className="flex-1 flex flex-col items-center justify-center relative">
           <div
-            className="absolute inset-0"
-            style={{
-              background: `linear-gradient(135deg, ${getColorHex(card.colors[0])} 50%, ${getColorHex(card.colors[1])} 50%)`,
-            }}
-          />
-        )}
-
-        {/* Wild multicolor: subtle multi-band */}
-        {card.type === 'wild_multicolor' && (
+            className="absolute inset-0 opacity-[0.06] flex items-center justify-center"
+            style={{ fontSize: size === 'sm' ? '60px' : size === 'md' ? '90px' : '120px' }}
+          >
+            {'\u2B50'}
+          </div>
           <div
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(135deg, #B45B5B 0%, #C0883A 25%, #5A8F5A 50%, #4A7FA5 75%, #8A6AAE 100%)',
-            }}
-          />
-        )}
-
-        <Icon size={iconSize} className="text-white/90 relative z-10" strokeWidth={1.5} />
-      </div>
-
-      {/* Card body */}
-      <div className="flex-1 flex flex-col items-center justify-center px-1 py-0.5 text-center">
-        <div className={`font-medium text-text-card leading-tight
-          ${size === 'sm' ? 'text-[5.5px]' : size === 'md' ? 'text-[8px]' : 'text-[10px]'}
-        `}>
-          {card.name}
-        </div>
-
-        {card.type === 'action' && (
-          <div className={`text-text-card/50 leading-tight mt-0.5
-            ${size === 'sm' ? 'text-[4.5px]' : size === 'md' ? 'text-[6.5px]' : 'text-[8px]'}
-          `}>
-            {getActionDescription(card)}
-          </div>
-        )}
-
-        {card.type === 'rent' && card.rentColors && (
-          <div className="flex gap-0.5 mt-1 flex-wrap justify-center">
-            {card.rentColors.slice(0, 4).map(color => (
-              <div
-                key={color}
-                className={`rounded-full ${size === 'sm' ? 'w-1.5 h-1.5' : 'w-2 h-2'}`}
-                style={{ backgroundColor: getColorHex(color) }}
-                title={COLOR_DISPLAY_NAMES[color]}
-              />
-            ))}
-            {card.rentColors.length > 4 && (
-              <span className="text-[5px] text-text-card/40">+{card.rentColors.length - 4}</span>
-            )}
-          </div>
-        )}
-
-        {card.type === 'wild_property' && card.colors && (
-          <div className="flex gap-0.5 mt-0.5">
-            {card.colors.map(color => (
-              <div
-                key={color}
-                className={`rounded-sm ${size === 'sm' ? 'w-2.5 h-1.5' : 'w-3.5 h-2'}`}
-                style={{ backgroundColor: getColorHex(color) }}
-                title={COLOR_DISPLAY_NAMES[color]}
-              />
-            ))}
-          </div>
-        )}
-
-        {card.type === 'money' && (
-          <div className={`font-semibold text-text-card/80 mt-0.5
-            ${size === 'sm' ? 'text-[7px]' : size === 'md' ? 'text-[11px]' : 'text-sm'}
-          `}>
+            className={`font-display ${MONEY_SIZES[size]} leading-none relative z-10`}
+            style={{ color: getMoneyColor(card.value) }}
+          >
             ${card.value}M
           </div>
-        )}
-      </div>
-
-      {/* Value in bottom-right corner */}
-      {showValue && card.value > 0 && (
-        <div className={`absolute bottom-0.5 right-1 text-text-card/30 font-medium
-          ${size === 'sm' ? 'text-[5px]' : size === 'md' ? 'text-[7px]' : 'text-[9px]'}
-        `}>
-          ${card.value}M
+          <div className={`text-game-text-light font-bold mt-1 uppercase tracking-wider
+            ${size === 'sm' ? 'text-[5px]' : size === 'md' ? 'text-[7px]' : 'text-[9px]'}
+          `}>
+            Monopoly Deal
+          </div>
         </div>
+      ) : (
+        <>
+          {/* Color band at top */}
+          <div
+            className={`${bandHeight} w-full flex items-center justify-center relative overflow-hidden`}
+            style={{
+              background: card.type === 'action'
+                ? getActionGradient(card)
+                : card.type === 'wild_property' && card.colors && card.colors.length >= 2
+                ? `linear-gradient(135deg, ${getColorHex(card.colors[0])} 50%, ${getColorHex(card.colors[1])} 50%)`
+                : card.type === 'wild_multicolor'
+                ? 'linear-gradient(135deg, #F44336 0%, #FF9800 20%, #FFEE58 40%, #66BB6A 60%, #1E88E5 80%, #AB47BC 100%)'
+                : card.type === 'rent' && card.rentColors
+                ? card.rentColors.length >= 2
+                  ? `linear-gradient(135deg, ${getColorHex(card.rentColors[0])} 50%, ${getColorHex(card.rentColors[1])} 50%)`
+                  : getColorHex(card.rentColors[0])
+                : card.color
+                ? getColorHex(card.color)
+                : '#667EEA',
+            }}
+          >
+            {/* Emoji on band */}
+            <span className={`${emojiSize} relative z-10 drop-shadow-sm`}>
+              {getCardEmoji(card)}
+            </span>
+          </div>
+
+          {/* Card body */}
+          <div className="flex-1 flex flex-col items-center justify-center px-1.5 py-0.5 text-center">
+            <div className={`font-extrabold text-game-text uppercase tracking-wide leading-tight
+              ${size === 'sm' ? 'text-[5.5px]' : size === 'md' ? 'text-[8px]' : 'text-[10px]'}
+            `}>
+              {card.name}
+            </div>
+
+            {card.type === 'action' && (
+              <div className={`text-game-text-light leading-tight mt-0.5 font-semibold
+                ${size === 'sm' ? 'text-[4px]' : size === 'md' ? 'text-[6.5px]' : 'text-[8px]'}
+              `}>
+                {getActionDescription(card)}
+              </div>
+            )}
+
+            {card.type === 'rent' && card.rentColors && (
+              <div className="flex gap-0.5 mt-1 flex-wrap justify-center">
+                {card.rentColors.slice(0, 4).map(color => (
+                  <div
+                    key={color}
+                    className={`rounded-full border-2 border-white ${size === 'sm' ? 'w-2.5 h-2.5' : 'w-3.5 h-3.5'}`}
+                    style={{ backgroundColor: getColorHex(color) }}
+                    title={COLOR_DISPLAY_NAMES[color]}
+                  />
+                ))}
+                {card.rentColors.length > 4 && (
+                  <span className="text-[6px] text-game-text-light font-bold">+{card.rentColors.length - 4}</span>
+                )}
+              </div>
+            )}
+
+            {card.type === 'wild_property' && card.colors && (
+              <div className="flex gap-1 mt-1">
+                {card.colors.map(color => (
+                  <div
+                    key={color}
+                    className={`rounded border-2 border-white ${size === 'sm' ? 'w-3 h-2' : 'w-4 h-2.5'}`}
+                    style={{ backgroundColor: getColorHex(color) }}
+                    title={COLOR_DISPLAY_NAMES[color]}
+                  />
+                ))}
+              </div>
+            )}
+
+            {card.type === 'wild_multicolor' && (
+              <div className={`font-display text-game-text mt-0.5
+                ${size === 'sm' ? 'text-[7px]' : size === 'md' ? 'text-[10px]' : 'text-sm'}
+              `}>
+                WILD
+              </div>
+            )}
+          </div>
+
+          {/* Value badge — bottom-right, colored pill */}
+          {showValue && card.value > 0 && (
+            <div className={`absolute bottom-1 right-1 bg-game-text/10 rounded-full font-bold text-game-text/60 flex items-center justify-center
+              ${size === 'sm' ? 'text-[5px] w-4 h-4' : size === 'md' ? 'text-[7px] w-5 h-5' : 'text-[9px] w-6 h-6'}
+            `}>
+              ${card.value}
+            </div>
+          )}
+        </>
       )}
     </motion.div>
   )
@@ -250,20 +274,20 @@ export default function Card({
 
 function getColorHex(color: PropertyColor): string {
   const map: Record<PropertyColor, string> = {
-    red: '#B45B5B',
-    blue: '#4A7FA5',
-    green: '#5A8F5A',
-    yellow: '#BFA840',
-    orange: '#C0883A',
-    purple: '#8A6AAE',
-    brown: '#7A6050',
-    teal: '#4A8A80',
-    pink: '#A85A75',
-    sky: '#5A9AB5',
-    railroad: '#555555',
-    utility: '#6A9A6A',
+    red: '#F44336',
+    blue: '#1E88E5',
+    green: '#66BB6A',
+    yellow: '#FFEE58',
+    orange: '#FF7043',
+    purple: '#AB47BC',
+    brown: '#8B4513',
+    teal: '#26A69A',
+    pink: '#EC407A',
+    sky: '#29B6F6',
+    railroad: '#424242',
+    utility: '#78909C',
   }
-  return map[color] || '#777'
+  return map[color] || '#999'
 }
 
 export { getColorHex }

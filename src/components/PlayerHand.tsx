@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
 import Card from './Card'
-import { Card as CardType, PropertyColor } from '../types/game'
+import { Card as CardType, PropertyColor, COLOR_DISPLAY_NAMES } from '../types/game'
 import { canPlayCard, getAvailableColors } from '../utils/helpers'
 import { getColorHex } from './Card'
 import { useState } from 'react'
@@ -77,37 +77,43 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
       <AnimatePresence>
         {selectedCard && isActionPhase && (
           <motion.div
-            className="absolute -top-14 left-1/2 -translate-x-1/2 flex gap-1.5 z-50"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
+            className="absolute -top-16 left-1/2 -translate-x-1/2 flex gap-2 z-50"
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
           >
-            <button
-              className="px-3 py-1.5 bg-[#3a5a3a] hover:bg-[#4a6a4a] text-[#c0d8c0] text-[11px] font-medium rounded-md flex items-center gap-1.5 transition-colors"
+            <motion.button
+              className="px-4 py-2 bg-[#66BB6A] text-white text-xs font-extrabold rounded-btn flex items-center gap-1.5 uppercase tracking-wide"
+              style={{ boxShadow: '0 4px 0 #2E7D32' }}
               onClick={() => handleAction('bank')}
+              whileTap={{ scale: 0.92, y: 2 }}
             >
-              <Landmark size={11} />
-              Bank (${selectedCard.value}M)
-            </button>
+              <Landmark size={13} />
+              Bank ${selectedCard.value}M
+            </motion.button>
 
             {canPlayAsProperty(selectedCard) && (
-              <button
-                className="px-3 py-1.5 bg-[#3a4a5a] hover:bg-[#4a5a6a] text-[#b0c8d8] text-[11px] font-medium rounded-md flex items-center gap-1.5 transition-colors"
+              <motion.button
+                className="px-4 py-2 bg-[#29B6F6] text-white text-xs font-extrabold rounded-btn flex items-center gap-1.5 uppercase tracking-wide"
+                style={{ boxShadow: '0 4px 0 #0288D1' }}
                 onClick={() => handleAction('property')}
+                whileTap={{ scale: 0.92, y: 2 }}
               >
-                <MapPin size={11} />
+                <MapPin size={13} />
                 Property
-              </button>
+              </motion.button>
             )}
 
             {canPlayAsAction(selectedCard) && canPlayCard(selectedCard, player, actionsPlayedThisTurn) && (
-              <button
-                className="px-3 py-1.5 bg-[#5a4a3a] hover:bg-[#6a5a4a] text-[#d8c8b0] text-[11px] font-medium rounded-md flex items-center gap-1.5 transition-colors"
+              <motion.button
+                className="px-4 py-2 bg-[#FF7043] text-white text-xs font-extrabold rounded-btn flex items-center gap-1.5 uppercase tracking-wide"
+                style={{ boxShadow: '0 4px 0 #E64A19' }}
                 onClick={() => handleAction('play')}
+                whileTap={{ scale: 0.92, y: 2 }}
               >
-                <Play size={11} />
+                <Play size={13} />
                 Play
-              </button>
+              </motion.button>
             )}
           </motion.div>
         )}
@@ -117,23 +123,27 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
       <AnimatePresence>
         {showColorPicker && (
           <motion.div
-            className="absolute -top-24 left-1/2 -translate-x-1/2 panel-raised rounded-lg p-3 z-50"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
+            className="absolute -top-28 left-1/2 -translate-x-1/2 frost-solid rounded-2xl p-4 z-50"
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
           >
-            <p className="text-[10px] text-text-muted mb-2 text-center">Choose color:</p>
-            <div className="flex gap-1.5 flex-wrap justify-center max-w-[200px]">
+            <p className="text-xs text-white font-bold mb-2 text-center">Choose color:</p>
+            <div className="flex gap-2 flex-wrap justify-center max-w-[220px]">
               {getAvailableColors(showColorPicker).map(color => (
-                <button
+                <motion.button
                   key={color}
-                  className="w-7 h-7 rounded-md border border-white/10 hover:border-gold/50 transition-colors flex items-center justify-center text-[7px] font-medium text-white/80"
-                  style={{ backgroundColor: getColorHex(color) }}
+                  className="w-9 h-9 rounded-full border-3 border-white flex items-center justify-center text-[7px] font-extrabold text-white"
+                  style={{
+                    backgroundColor: getColorHex(color),
+                    boxShadow: `0 3px 0 ${getColorHex(color)}80`,
+                  }}
                   onClick={() => handleColorSelect(color)}
-                  title={color}
+                  whileTap={{ scale: 0.85 }}
+                  title={COLOR_DISPLAY_NAMES[color]}
                 >
                   {color.slice(0, 2).toUpperCase()}
-                </button>
+                </motion.button>
               ))}
             </div>
           </motion.div>
@@ -141,7 +151,7 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
       </AnimatePresence>
 
       {/* Hand of cards */}
-      <div className="flex justify-center items-end py-2 px-4 min-h-[140px]">
+      <div className="flex justify-center items-end py-2 px-4 min-h-[150px]">
         <AnimatePresence>
           {player.hand.map((card, i) => {
             const mid = (player.hand.length - 1) / 2
@@ -155,12 +165,12 @@ export default function PlayerHand({ onCardAction }: PlayerHandProps) {
                 initial={{ opacity: 0, y: 80 }}
                 animate={{
                   opacity: 1,
-                  y: selectedCard?.id === card.id ? -8 : 0,
+                  y: selectedCard?.id === card.id ? -16 : 0,
                   rotate: rotation,
                   x,
                 }}
                 exit={{ opacity: 0, y: 80 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                 style={{ zIndex: selectedCard?.id === card.id ? 50 : i, marginLeft: i > 0 ? '-16px' : '0' }}
               >
                 <Card

@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { Player, PropertySet, PropertyColor, PROPERTY_SET_SIZES, COLOR_DISPLAY_NAMES, RENT_AMOUNTS } from '../types/game'
 import { getColorHex } from './Card'
 import { isSetComplete } from '../utils/helpers'
-import { Home, Building, Check } from 'lucide-react'
 
 interface PropertyAreaProps {
   player: Player
@@ -15,7 +14,7 @@ interface PropertyAreaProps {
 export default function PropertyArea({ player, isCurrentPlayer, compact, onPropertyClick, selectableForSteal }: PropertyAreaProps) {
   if (player.properties.length === 0) {
     return (
-      <div className={`flex items-center justify-center ${compact ? 'h-16' : 'h-24'} text-text-muted/30 text-[11px]`}>
+      <div className={`flex items-center justify-center ${compact ? 'h-16' : 'h-24'} text-white/30 text-xs font-semibold`}>
         No properties
       </div>
     )
@@ -52,8 +51,8 @@ function PropertySetDisplay({
   return (
     <motion.div
       className={`
-        rounded-lg border p-1.5 relative
-        ${complete ? 'border-gold/30 bg-gold/[0.03]' : 'border-white/[0.06] bg-white/[0.02]'}
+        rounded-xl border-2 p-1.5 relative bg-white/10
+        ${complete ? 'border-success ring-2 ring-success/30' : 'border-white/20'}
         ${compact ? 'min-w-[80px]' : 'min-w-[100px]'}
       `}
       initial={{ opacity: 0 }}
@@ -62,21 +61,22 @@ function PropertySetDisplay({
     >
       {/* Color header */}
       <div
-        className="rounded-t px-2 py-0.5 flex items-center justify-between mb-1"
-        style={{ backgroundColor: colorHex, opacity: 0.85 }}
+        className="rounded-lg px-2 py-1 flex items-center justify-between mb-1"
+        style={{ backgroundColor: colorHex }}
       >
-        <span className="text-[8px] font-medium text-white/90 truncate">
+        <span className="text-[8px] font-extrabold text-white uppercase tracking-wide truncate">
           {COLOR_DISPLAY_NAMES[set.color]}
         </span>
-        <span className="text-[7px] text-white/60">
+        <span className="text-[7px] text-white/80 font-bold bg-white/20 rounded-full px-1.5">
           {set.cards.length}/{required}
         </span>
       </div>
 
       {/* Complete indicator */}
       {complete && (
-        <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-gold flex items-center justify-center z-10">
-          <Check size={9} className="text-walnut" strokeWidth={3} />
+        <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-success flex items-center justify-center z-10 text-white text-[10px] font-bold border-2 border-white"
+          style={{ boxShadow: '0 2px 0 #2E7D32' }}>
+          {'\u2714'}
         </div>
       )}
 
@@ -86,10 +86,10 @@ function PropertySetDisplay({
           <motion.div
             key={card.id}
             className={`
-              rounded px-1.5 py-0.5 text-[7.5px] font-medium truncate text-white/80
-              ${selectableForSteal && !complete ? 'cursor-pointer hover:ring-1 hover:ring-gold/40 transition-all' : ''}
+              rounded-md px-1.5 py-0.5 text-[7.5px] font-bold truncate text-white
+              ${selectableForSteal && !complete ? 'cursor-pointer hover:ring-2 hover:ring-accent transition-all' : ''}
             `}
-            style={{ backgroundColor: `${colorHex}66` }}
+            style={{ backgroundColor: `${colorHex}CC` }}
             onClick={() => selectableForSteal && !complete && onCardClick?.(card.id, set.color)}
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -103,15 +103,15 @@ function PropertySetDisplay({
       {/* House / Hotel indicators */}
       <div className="flex gap-1 mt-1 justify-center">
         {set.hasHouse && (
-          <div className="flex items-center gap-0.5 bg-[#3a5a3a] rounded px-1 py-0.5">
-            <Home size={7} className="text-[#a0c8a0]" />
-            <span className="text-[6px] text-[#a0c8a0] font-medium">House</span>
+          <div className="flex items-center gap-0.5 bg-[#66BB6A] rounded-full px-1.5 py-0.5">
+            <span className="text-[8px]">{'\u{1F3E0}'}</span>
+            <span className="text-[6px] text-white font-bold">House</span>
           </div>
         )}
         {set.hasHotel && (
-          <div className="flex items-center gap-0.5 bg-[#5a3a3a] rounded px-1 py-0.5">
-            <Building size={7} className="text-[#c8a0a0]" />
-            <span className="text-[6px] text-[#c8a0a0] font-medium">Hotel</span>
+          <div className="flex items-center gap-0.5 bg-[#FF7043] rounded-full px-1.5 py-0.5">
+            <span className="text-[8px]">{'\u{1F3E8}'}</span>
+            <span className="text-[6px] text-white font-bold">Hotel</span>
           </div>
         )}
       </div>
@@ -122,7 +122,7 @@ function PropertySetDisplay({
           {rents.map((r, i) => (
             <div
               key={i}
-              className={`text-[6px] px-1 rounded ${i < set.cards.length ? 'bg-gold/15 text-gold font-medium' : 'bg-white/[0.03] text-text-muted/30'}`}
+              className={`text-[6px] px-1 rounded-full font-bold ${i < set.cards.length ? 'bg-accent/30 text-accent-dark' : 'bg-white/10 text-white/30'}`}
             >
               ${r}M
             </div>

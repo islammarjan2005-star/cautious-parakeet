@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
-import { Card as CardType, PropertyColor, PLAYER_COLORS, getPlayerInitials } from '../types/game'
+import { Card as CardType, PropertyColor, PLAYER_COLORS } from '../types/game'
 import PlayerHand from './PlayerHand'
 import PropertyArea from './PropertyArea'
 import BankArea from './BankArea'
@@ -13,7 +13,7 @@ import GameOverScreen from './GameOverScreen'
 import Card from './Card'
 import { countCompleteSets, getTotalValue } from '../utils/helpers'
 import {
-  Trophy, CreditCard, Landmark, Layers, SkipForward,
+  Trophy, CreditCard, Layers, SkipForward,
   ArrowDown, Hand,
 } from 'lucide-react'
 
@@ -71,25 +71,27 @@ export default function GameBoard() {
   }
 
   return (
-    <div className="h-screen table-bg flex flex-col overflow-hidden relative">
+    <div className="h-screen game-bg flex flex-col overflow-hidden relative">
       {/* === TOP BAR === */}
-      <div className="flex-shrink-0 panel border-b border-white/[0.06] px-4 py-2 flex items-center justify-between relative z-10">
+      <div className="flex-shrink-0 frost border-b border-white/20 px-4 py-2.5 flex items-center justify-between relative z-10" style={{ borderRadius: 0 }}>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-text-primary">Monopoly</span>
-            <span className="text-xs font-medium tracking-[0.15em] uppercase text-gold">Deal</span>
+            <span className="text-base font-display text-white drop-shadow">MONOPOLY</span>
+            <span className="text-sm font-display text-accent drop-shadow">DEAL</span>
           </div>
-          <div className="h-4 w-px bg-white/[0.08]" />
-          <div className="text-[10px] text-text-muted">Turn {turnNumber}</div>
+          <div className="h-5 w-px bg-white/20" />
+          <div className="bg-white/20 rounded-full px-3 py-0.5 text-xs font-bold text-white">
+            Turn {turnNumber}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-[10px] text-text-muted">
-            <Layers size={11} />
-            <span>{drawPile.length} cards left</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-white/80">
+            <Layers size={13} />
+            <span>{drawPile.length} cards</span>
           </div>
           {discardPile.length > 0 && (
-            <div className="text-[10px] text-text-muted">
+            <div className="text-xs font-bold text-white/60">
               Discard: {discardPile.length}
             </div>
           )}
@@ -100,8 +102,8 @@ export default function GameBoard() {
       <div className="flex-1 flex overflow-hidden relative z-10">
 
         {/* Left sidebar - Opponents */}
-        <div className="w-64 flex-shrink-0 p-3 space-y-3 overflow-y-auto scrollbar-thin border-r border-white/[0.04]">
-          <div className="text-[10px] text-text-muted font-medium uppercase tracking-wider mb-1">Opponents</div>
+        <div className="w-64 flex-shrink-0 p-3 space-y-3 overflow-y-auto scrollbar-thin border-r border-white/10">
+          <div className="text-xs text-white/70 font-bold uppercase tracking-wider mb-1">Opponents</div>
           {opponents.map((opp) => {
             const realIndex = players.indexOf(opp)
             return (
@@ -136,26 +138,27 @@ export default function GameBoard() {
                     <Card card={{ id: 'deck', type: 'money', name: '', value: 0 }} size="md" faceDown />
                   </div>
                 </div>
-                <div className="text-[10px] text-text-muted mt-2 font-medium">
-                  Draw Pile ({drawPile.length})
+                <div className="text-xs text-white/70 mt-2 font-bold">
+                  Draw ({drawPile.length})
                 </div>
               </div>
 
               {/* Phase indicator / Draw button */}
-              <div className="text-center min-w-[160px]">
+              <div className="text-center min-w-[180px]">
                 <AnimatePresence mode="wait">
                   {phase === 'draw' && (
                     <motion.button
                       key="draw"
-                      className="btn-primary text-sm px-6 py-3 rounded-lg flex items-center gap-2 mx-auto"
+                      className="btn-primary text-base px-8 py-4 flex items-center gap-2 mx-auto"
                       onClick={drawCards}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      whileTap={{ scale: 0.97 }}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      whileTap={{ scale: 0.92, y: 2 }}
+                      whileHover={{ scale: 1.05 }}
                     >
-                      <ArrowDown size={16} />
-                      Draw 2 Cards
+                      <ArrowDown size={20} strokeWidth={3} />
+                      <span className="font-extrabold">DRAW</span>
                     </motion.button>
                   )}
 
@@ -167,31 +170,40 @@ export default function GameBoard() {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                     >
-                      <div className="flex items-center gap-1.5 justify-center mb-3">
+                      {/* YOUR TURN pill */}
+                      <div className="inline-block bg-success text-game-text font-extrabold text-xs px-4 py-1.5 rounded-full mb-3 animate-pulse-soft"
+                        style={{ boxShadow: '0 3px 0 #2E7D32' }}>
+                        YOUR TURN
+                      </div>
+
+                      {/* Action dots */}
+                      <div className="flex items-center gap-2 justify-center mb-3">
                         {[0, 1, 2].map(i => (
                           <div
                             key={i}
-                            className={`w-5 h-5 rounded-full border flex items-center justify-center text-[9px] font-medium
+                            className={`w-7 h-7 rounded-full border-3 flex items-center justify-center text-xs font-extrabold transition-all
                               ${i < actionsPlayedThisTurn
-                                ? 'bg-gold border-gold-dark text-walnut'
-                                : 'bg-white/[0.04] border-white/[0.08] text-text-muted'
+                                ? 'bg-accent border-accent-dark text-game-text'
+                                : 'bg-white/20 border-white/40 text-white/60'
                               }
                             `}
+                            style={i < actionsPlayedThisTurn ? { boxShadow: '0 3px 0 #C6A800' } : {}}
                           >
                             {i + 1}
                           </div>
                         ))}
                       </div>
-                      <p className="text-[11px] text-text-muted mb-3">
-                        {actionsPlayedThisTurn}/3 actions played
+                      <p className="text-xs text-white/70 font-bold mb-3">
+                        {actionsPlayedThisTurn}/3 actions
                       </p>
-                      <button
-                        className="btn-secondary text-xs flex items-center gap-1.5 mx-auto"
+                      <motion.button
+                        className="btn-secondary text-sm flex items-center gap-1.5 mx-auto"
                         onClick={endTurn}
+                        whileTap={{ scale: 0.92 }}
                       >
-                        <SkipForward size={12} />
-                        End Turn
-                      </button>
+                        <SkipForward size={14} />
+                        <span className="font-bold">End Turn</span>
+                      </motion.button>
                     </motion.div>
                   )}
 
@@ -202,10 +214,14 @@ export default function GameBoard() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                     >
-                      <Hand size={24} className="mx-auto text-gold mb-2" />
-                      <p className="text-sm text-gold font-medium">Discard to 7 cards</p>
-                      <p className="text-[11px] text-text-muted mt-1">
-                        {currentPlayer.hand.length} cards in hand
+                      <div className="inline-block bg-danger text-white font-extrabold text-xs px-4 py-1.5 rounded-full mb-2 animate-pulse-soft"
+                        style={{ boxShadow: '0 3px 0 #C62828' }}>
+                        DISCARD
+                      </div>
+                      <Hand size={28} className="mx-auto text-white mb-2" />
+                      <p className="text-sm text-white font-bold">Tap cards to discard</p>
+                      <p className="text-xs text-white/60 font-semibold mt-1">
+                        {currentPlayer.hand.length} / 7 cards
                       </p>
                     </motion.div>
                   )}
@@ -214,14 +230,14 @@ export default function GameBoard() {
 
               {/* Discard pile */}
               <div className="text-center">
-                <div className="w-24 h-[134px] rounded-lg border border-dashed border-white/[0.08] flex items-center justify-center">
+                <div className="w-24 h-[134px] rounded-card border-2 border-dashed border-white/20 flex items-center justify-center bg-white/5">
                   {discardPile.length > 0 ? (
                     <Card card={discardPile[discardPile.length - 1]} size="md" showValue />
                   ) : (
-                    <span className="text-[10px] text-text-muted/40">Discard</span>
+                    <span className="text-xs text-white/30 font-bold">Discard</span>
                   )}
                 </div>
-                <div className="text-[10px] text-text-muted mt-2 font-medium">
+                <div className="text-xs text-white/70 mt-2 font-bold">
                   Discard ({discardPile.length})
                 </div>
               </div>
@@ -229,48 +245,47 @@ export default function GameBoard() {
           </div>
 
           {/* Current player property/bank area */}
-          <div className="flex-shrink-0 panel border-t border-white/[0.06] p-3">
+          <div className="flex-shrink-0 frost border-t border-white/20 p-3" style={{ borderRadius: 0 }}>
             <div className="flex items-start gap-4">
               {/* Player info */}
               <div className="flex-shrink-0 w-48">
                 <div className="flex items-center gap-2.5 mb-2">
                   <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold"
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-xl border-3"
                     style={{
-                      backgroundColor: `${playerColor}20`,
-                      color: playerColor,
-                      border: `1.5px solid ${playerColor}40`,
+                      backgroundColor: `${playerColor}25`,
+                      borderColor: playerColor,
+                      boxShadow: `0 3px 0 ${playerColor}60`,
                     }}
                   >
-                    {getPlayerInitials(currentPlayer.name)}
+                    {currentPlayer.avatar}
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-text-primary">{currentPlayer.name}</div>
-                    <div className="flex items-center gap-2 text-[9px] text-text-muted">
+                    <div className="text-sm font-bold text-white">{currentPlayer.name}</div>
+                    <div className="flex items-center gap-2 text-xs font-semibold text-white/70">
+                      <span>${bankTotal}M</span>
                       <span className="flex items-center gap-0.5">
-                        <Landmark size={9} />${bankTotal}M
-                      </span>
-                      <span className="flex items-center gap-0.5">
-                        <CreditCard size={9} />{currentPlayer.hand.length} cards
+                        <CreditCard size={10} />{currentPlayer.hand.length}
                       </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Complete sets tracker */}
-                <div className="flex items-center gap-1">
-                  <span className="text-[9px] text-text-muted">Sets:</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] text-white/60 font-bold">Sets:</span>
                   {[0, 1, 2].map(i => (
                     <div
                       key={i}
-                      className={`w-4.5 h-4.5 rounded border flex items-center justify-center
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all
                         ${i < completeSets
-                          ? 'bg-gold/20 border-gold/40'
-                          : 'bg-white/[0.03] border-white/[0.06]'
+                          ? 'bg-accent border-accent-dark'
+                          : 'bg-white/10 border-white/20'
                         }
                       `}
+                      style={i < completeSets ? { boxShadow: '0 2px 0 #C6A800' } : {}}
                     >
-                      {i < completeSets && <Trophy size={9} className="text-gold" />}
+                      {i < completeSets ? <Trophy size={11} className="text-game-text" /> : null}
                     </div>
                   ))}
                 </div>
@@ -283,7 +298,7 @@ export default function GameBoard() {
 
               {/* Properties */}
               <div className="flex-1 min-w-0">
-                <div className="text-[10px] text-text-muted font-medium uppercase tracking-wider mb-1">Properties</div>
+                <div className="text-xs text-white/70 font-bold uppercase tracking-wider mb-1">Properties</div>
                 <PropertyArea player={currentPlayer} isCurrentPlayer />
               </div>
             </div>
@@ -291,13 +306,13 @@ export default function GameBoard() {
         </div>
 
         {/* Right sidebar - Game Log */}
-        <div className="w-56 flex-shrink-0 border-l border-white/[0.04] p-3">
+        <div className="w-56 flex-shrink-0 border-l border-white/10 p-3">
           <GameLog />
         </div>
       </div>
 
       {/* === BOTTOM - Player Hand === */}
-      <div className="flex-shrink-0 panel border-t border-white/[0.06] relative z-20">
+      <div className="flex-shrink-0 frost border-t border-white/20 relative z-20" style={{ borderRadius: 0 }}>
         {phase === 'discard' ? (
           <div className="p-2">
             <div className="flex justify-center items-end gap-1 py-2">

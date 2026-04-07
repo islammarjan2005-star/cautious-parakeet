@@ -16,14 +16,14 @@ export default function GameLog() {
 
   const getPlayerColor = (playerId: string) => {
     const idx = players.findIndex(p => p.id === playerId)
-    return idx >= 0 ? PLAYER_COLORS[idx % PLAYER_COLORS.length] : '#555'
+    return idx >= 0 ? PLAYER_COLORS[idx % PLAYER_COLORS.length] : '#999'
   }
 
   return (
-    <div className="panel rounded-lg p-3 h-full flex flex-col">
+    <div className="frost rounded-2xl p-3 h-full flex flex-col">
       <div className="flex items-center gap-1.5 mb-2">
-        <ScrollText size={12} className="text-text-muted" />
-        <span className="text-[10px] font-medium text-text-muted">Game Log</span>
+        <ScrollText size={13} className="text-white/60" />
+        <span className="text-xs font-bold text-white/70">Game Log</span>
       </div>
 
       <div
@@ -40,10 +40,10 @@ export default function GameLog() {
               transition={{ duration: 0.15 }}
             >
               <span
-                className="inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle opacity-60"
+                className="inline-block w-2 h-2 rounded-full mr-1.5 align-middle border border-white/30"
                 style={{ backgroundColor: getPlayerColor(entry.playerId) }}
               />
-              <span className="text-text-muted/60">{entry.message}</span>
+              <span className="text-white/70 font-semibold">{entry.message}</span>
             </motion.div>
           ))}
         </AnimatePresence>

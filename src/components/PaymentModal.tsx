@@ -5,7 +5,7 @@ import { Card as CardType } from '../types/game'
 import { getTotalValue, getPlayerTotalWealth } from '../utils/helpers'
 import { getColorHex } from './Card'
 import { ModalWrapper } from './ActionModal'
-import { AlertTriangle, ShieldX, Landmark, MapPin } from 'lucide-react'
+import { AlertTriangle, Landmark, MapPin } from 'lucide-react'
 
 export default function PaymentModal() {
   const {
@@ -74,16 +74,17 @@ export default function PaymentModal() {
     <ModalWrapper onClose={() => {}}>
       {/* Header */}
       <div className="text-center mb-4">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-900/30 mb-3">
-          <AlertTriangle size={22} className="text-red-400/80" />
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-3"
+          style={{ background: 'linear-gradient(135deg, #FF5252, #FF1744)' }}>
+          <AlertTriangle size={24} className="text-white" />
         </div>
-        <h3 className="text-base font-semibold text-text-primary">
-          {isDealBreaker ? 'Deal Breaker' : `Pay $${amountDue}M`}
+        <h3 className="text-lg font-extrabold text-game-text">
+          {isDealBreaker ? '\u{1F4A5} Deal Breaker!' : `Pay $${amountDue}M`}
         </h3>
-        <p className="text-[11px] text-text-muted mt-1">
+        <p className="text-xs text-game-text-light font-semibold mt-1">
           {sourcePlayer.name} {
             pendingAction.type === 'debt_collector' ? 'is collecting a debt' :
-            pendingAction.type === 'its_my_birthday' ? 'is celebrating a birthday' :
+            pendingAction.type === 'its_my_birthday' ? 'is celebrating a birthday \u{1F382}' :
             pendingAction.type === 'rent' ? `is charging rent for ${pendingAction.propertyColor}` :
             pendingAction.type === 'deal_breaker' ? `wants to steal your ${pendingAction.propertyColor} set` :
             'demands payment'
@@ -93,21 +94,23 @@ export default function PaymentModal() {
 
       {/* Just Say No option */}
       {hasJustSayNo && (
-        <button
-          className="w-full mb-4 p-2.5 rounded-lg bg-red-900/40 border border-red-800/40 flex items-center gap-3 hover:bg-red-900/50 transition-colors"
+        <motion.button
+          className="w-full mb-4 p-3 rounded-xl border-3 border-danger flex items-center gap-3 hover:bg-danger/10 transition-colors"
+          style={{ background: 'rgba(255,82,82,0.08)', boxShadow: '0 3px 0 #C62828' }}
           onClick={handleJustSayNo}
+          whileTap={{ scale: 0.97, y: 2 }}
         >
-          <ShieldX size={16} className="text-red-300" />
+          <span className="text-2xl">{'\u{1F6AB}'}</span>
           <div className="text-left">
-            <div className="text-xs font-semibold text-red-200">Just Say No</div>
-            <div className="text-[9px] text-red-300/60">Cancel this action entirely</div>
+            <div className="text-sm font-extrabold text-danger">Just Say No!</div>
+            <div className="text-[9px] text-game-text-light font-semibold">Cancel this action entirely</div>
           </div>
-        </button>
+        </motion.button>
       )}
 
       {isDealBreaker ? (
         <div>
-          <p className="text-[11px] text-text-muted mb-4 text-center">
+          <p className="text-xs text-game-text-light font-semibold mb-4 text-center">
             Your complete {pendingAction.propertyColor} property set will be taken.
           </p>
           <button className="w-full btn-danger text-sm" onClick={handlePayForDealBreaker}>
@@ -118,21 +121,21 @@ export default function PaymentModal() {
         <div>
           {/* Payment progress */}
           <div className="mb-4">
-            <div className="flex justify-between text-[11px] mb-1">
-              <span className="text-text-muted">Selected</span>
-              <span className={`font-medium ${selectedTotal >= amountDue ? 'text-[#7a9a7a]' : 'text-gold'}`}>
+            <div className="flex justify-between text-xs mb-1">
+              <span className="text-game-text-light font-semibold">Selected</span>
+              <span className={`font-extrabold ${selectedTotal >= amountDue ? 'text-success-dark' : 'text-accent-dark'}`}>
                 ${selectedTotal}M / ${amountDue}M
               </span>
             </div>
-            <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+            <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
               <motion.div
-                className={`h-full rounded-full ${selectedTotal >= amountDue ? 'bg-[#5a8a5a]' : 'bg-gold'}`}
+                className={`h-full rounded-full ${selectedTotal >= amountDue ? 'bg-success' : 'bg-accent'}`}
                 animate={{ width: `${Math.min(100, (selectedTotal / amountDue) * 100)}%` }}
                 transition={{ type: 'spring' }}
               />
             </div>
             {totalWealth < amountDue && (
-              <p className="text-[9px] text-gold/70 mt-1">
+              <p className="text-[10px] text-danger font-semibold mt-1">
                 Not enough to pay full amount. Select all you can.
               </p>
             )}
@@ -141,22 +144,23 @@ export default function PaymentModal() {
           {/* Bank cards */}
           {respondingPlayer.bank.length > 0 && (
             <div className="mb-3">
-              <div className="text-[10px] text-text-muted font-medium mb-1 flex items-center gap-1">
-                <Landmark size={9} /> BANK
+              <div className="text-xs text-game-text-light font-bold mb-1.5 flex items-center gap-1 uppercase tracking-wide">
+                <Landmark size={11} /> Bank
               </div>
-              <div className="flex gap-1 flex-wrap">
+              <div className="flex gap-1.5 flex-wrap">
                 {respondingPlayer.bank.map(card => {
                   const isSelected = selectedBankIds.includes(card.id)
                   return (
                     <button
                       key={card.id}
                       className={`
-                        rounded px-2 py-1 text-[11px] font-medium border transition-colors
+                        rounded-full px-3 py-1 text-xs font-extrabold border-2 transition-all
                         ${isSelected
-                          ? 'bg-gold/20 text-gold border-gold/40'
-                          : 'bg-white/[0.04] text-text-muted border-white/[0.06] hover:border-white/[0.12]'
+                          ? 'bg-accent text-game-text border-accent-dark ring-2 ring-accent/30'
+                          : 'bg-white text-game-text border-gray-200 hover:border-primary'
                         }
                       `}
+                      style={{ boxShadow: isSelected ? '0 2px 0 #C6A800' : '0 2px 0 rgba(0,0,0,0.06)' }}
                       onClick={() => toggleBank(card.id)}
                     >
                       ${card.value}M
@@ -170,10 +174,10 @@ export default function PaymentModal() {
           {/* Property cards */}
           {respondingPlayer.properties.length > 0 && (
             <div className="mb-4">
-              <div className="text-[10px] text-text-muted font-medium mb-1 flex items-center gap-1">
-                <MapPin size={9} /> PROPERTIES
+              <div className="text-xs text-game-text-light font-bold mb-1.5 flex items-center gap-1 uppercase tracking-wide">
+                <MapPin size={11} /> Properties
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {respondingPlayer.properties.map(set =>
                   set.cards.map(card => {
                     const isSelected = selectedPropertyIds.includes(card.id)
@@ -181,17 +185,19 @@ export default function PaymentModal() {
                       <button
                         key={card.id}
                         className={`
-                          w-full flex items-center gap-2 rounded px-2 py-1.5 text-[11px] border transition-colors
+                          w-full flex items-center gap-2 rounded-xl px-3 py-2 text-xs border-2 transition-all
                           ${isSelected
-                            ? 'bg-gold/10 border-gold/30 text-gold'
-                            : 'bg-white/[0.02] border-white/[0.06] text-text-muted hover:border-white/[0.12]'
+                            ? 'bg-accent/10 border-accent text-game-text ring-2 ring-accent/20'
+                            : 'bg-white border-gray-200 text-game-text hover:border-primary'
                           }
                         `}
+                        style={{ boxShadow: '0 2px 0 rgba(0,0,0,0.06)' }}
                         onClick={() => toggleProperty(card.id)}
                       >
-                        <div className="w-2.5 h-2.5 rounded" style={{ backgroundColor: getColorHex(set.color) }} />
-                        <span className="font-medium">{card.name}</span>
-                        <span className="ml-auto text-[9px]">${card.value}M</span>
+                        <div className="w-4 h-4 rounded-full border-2 border-white"
+                          style={{ backgroundColor: getColorHex(set.color), boxShadow: `0 1px 0 ${getColorHex(set.color)}60` }} />
+                        <span className="font-bold">{card.name}</span>
+                        <span className="ml-auto text-[10px] font-extrabold text-game-text-light">${card.value}M</span>
                       </button>
                     )
                   })
@@ -201,17 +207,19 @@ export default function PaymentModal() {
           )}
 
           {/* Pay button */}
-          <button
-            className={`w-full py-2.5 rounded-lg font-medium text-sm transition-colors ${
+          <motion.button
+            className={`w-full py-3 rounded-btn font-extrabold text-sm transition-all ${
               canPay
-                ? 'bg-[#3a5a3a] text-[#c0d8c0] hover:bg-[#4a6a4a]'
-                : 'bg-white/[0.04] text-text-muted/40 cursor-not-allowed'
+                ? 'bg-success text-game-text'
+                : 'bg-gray-200 text-game-text-light cursor-not-allowed'
             }`}
+            style={canPay ? { boxShadow: '0 4px 0 #2E7D32' } : {}}
             disabled={!canPay}
             onClick={handlePay}
+            whileTap={canPay ? { scale: 0.95, y: 2 } : undefined}
           >
             {canPay ? `Pay $${selectedTotal}M` : `Select $${amountDue}M worth of assets`}
-          </button>
+          </motion.button>
         </div>
       )}
     </ModalWrapper>
